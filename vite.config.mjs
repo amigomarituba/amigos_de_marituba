@@ -12,10 +12,9 @@ export default defineConfig(({mode}) => {
     build: {
       outDir: 'dist',
     },
-    define: {
-      VITE_URL_API: JSON.stringify(env.VITE_URL_API),
-    },
-
+    // define: {
+    //   VITE_URL_API: JSON.stringify(env.VITE_URL_API),
+    // },
     css: {
       postcss: {
         plugins: [
