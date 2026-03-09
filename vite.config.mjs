@@ -15,7 +15,6 @@ export default defineConfig(({mode}) => {
     define: {
       VITE_URL_API: JSON.stringify(env.VITE_URL_API),
     },
-
     css: {
       postcss: {
         plugins: [
