@@ -57,7 +57,7 @@ export default defineConfig(({mode}) => {
       port: 3000,
       proxy: {
         "/api":{
-          target:'http://amigo7732.c44.integrator.host:62863',
+          target:import.meta.env.VITE_URL_API,
           changeOrigin:true,
           rewrite:(path)=> path.replace(/^\/api\/proxy/,'')
         }

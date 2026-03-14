@@ -6,9 +6,10 @@ export default async function handler(req, res) {
     const url = `${import.meta.env.VITE_URL_API}/${path.join('/')}`
     const response = await axios({
       method: req.method,
-      url,
+      url: url,
       data: req.body,
-      headers: req.headers,
+      headers: { ...req.headers, host: undefined },
+      validateStatus:()=>true
     })
 
     res.status(response.status).json(response.data)
