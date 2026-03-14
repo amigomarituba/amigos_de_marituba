@@ -8,6 +8,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, process.cwd(), '')
   
   return {
+    
     base: './',
     build: {
       outDir: 'dist',
@@ -55,6 +56,11 @@ export default defineConfig(({mode}) => {
       open:true,
       port: 3000,
       proxy: {
+        "/api":{
+          target:'http://amigo7732.c44.integrator.host:62863',
+          changeOrigin:true,
+          rewrite:(path)=> path.replace(/^\/api\/proxy/,'')
+        }
         // https://vitejs.dev/config/server-options.html
       },
     },

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instanceAxios = axios.create({
-    baseURL: import.meta.env.VITE_URL_API,
+    baseURL: '/api/proxy',
     timeout: 1000,
   });
                                            

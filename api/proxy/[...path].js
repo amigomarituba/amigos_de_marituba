@@ -1,0 +1,20 @@
+import axios from 'axios'
+
+export default async function handler(req, res) {
+  try {
+    const { path = [] } = req.query
+    const url = `${import.meta.env.VITE_URL_API}/${path.join('/')}`
+    const response = await axios({
+      method: req.method,
+      url,
+      data: req.body,
+      headers: req.headers,
+    })
+
+    res.status(response.status).json(response.data)
+  } catch (error) {
+    res.status(500).json({
+      error: error.menssage,
+    })
+  }
+}
