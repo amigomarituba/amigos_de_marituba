@@ -55,12 +55,12 @@ export default defineConfig(({mode}) => {
     server: {
       open:true,
       port: 3000,
-      proxy: {
-        "/api":{
-          target:env.VITE_URL_API,
-          changeOrigin:true,
-          rewrite:(path)=> path.replace(/^\/api\/proxy/,'')
-        }
+      // proxy: {
+      //   "/api":{
+      //     target:env.VITE_URL_API,
+      //     changeOrigin:true,
+      //     rewrite:(path)=> path.replace(/^\/api\/proxy/,'')
+      //   }
         // https://vitejs.dev/config/server-options.html
       },
     },
