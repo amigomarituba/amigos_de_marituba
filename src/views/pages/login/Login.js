@@ -112,7 +112,7 @@ const Login = () => {
           <CCard className="text-white bg-primary p-2 d-none d-md-block">
            
             <CCardBody className="text-center">
-              <CImage src={'./public/logo.ico'} width={'150rem'} style={{ marginBottom: 3 }} />
+              <CImage src={'/api/public/img/logo.png'} width={'150rem'} style={{ marginBottom: 3 }} />
               <p>Projeto Amigos de Marituba, é uma projeto apoiado pela uzina da paz de marituba</p>
               <p>Apoiador Igor Castro</p>
             </CCardBody>
