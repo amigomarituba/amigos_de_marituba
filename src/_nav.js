@@ -20,7 +20,8 @@ import {
   cilTerrain,
   cilClipboard,
   cilCalendar,
-  cilBarChart
+  cilBarChart,
+  cilSettings
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -76,6 +77,18 @@ const _nav = [
     type:'public',
     to: '/servicos/agendamentos',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    type:'public',
+    name: 'Configurações',
+  },
+  {
+    component: CNavItem,
+    name: 'Acesso e Serviços',
+    type:'public',
+    to: '/settings',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   }
 ]
 
