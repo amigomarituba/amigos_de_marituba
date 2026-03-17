@@ -55,7 +55,7 @@ const AppHeader = () => {
           style={{ marginInlineStart: '-14px', flexDirection: 'row', display: 'flex', alignItems: 'center' }}
         >
           <CIcon icon={cilMenu} size="lg" onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })} style={{ marginRight: 20 }} />
-          <CHeaderNav className="d-none d-md-flex">
+          {/* <CHeaderNav className="d-none d-md-flex">
             <CNavItem>
                {nameUser.user.level == 'adm'?<CNavLink to="/dashboard" as={NavLink}>Dashboard</CNavLink>:''
                 }
@@ -66,7 +66,7 @@ const AppHeader = () => {
               {nameUser.user.level == 'adm'?<CNavLink to="/settings" as={NavLink}>Configurações</CNavLink>:''}
             </CNavItem>
 
-          </CHeaderNav>
+          </CHeaderNav> */}
         </CHeaderToggler>
 
         {/* <CHeaderNav>
