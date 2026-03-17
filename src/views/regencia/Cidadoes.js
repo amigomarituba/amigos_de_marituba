@@ -218,7 +218,7 @@ const Cidadoes = () => {
 
   useEffect(()=>{
     Leaders()
-  })
+  },[])
 
   return (
     <>
