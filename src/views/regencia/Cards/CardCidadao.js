@@ -239,6 +239,8 @@ const CardCidadao = ({ data, editerCidadao, deleteCidadao, historico }) => {
 
             <BoxInfo title={'RG'} value={data.rg} />
 
+            <BoxInfo title={'Lider Responsavel'} value={`[${data.leader.uid}]:${data.leader.name}`} />
+
             <Box sx={{ marginBottom: 1 }}>
               <CFormLabel
                 htmlFor="exampleFormControlInput1"

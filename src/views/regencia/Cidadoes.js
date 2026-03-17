@@ -72,7 +72,7 @@ const Cidadoes = () => {
   //com agendamentos
   const [alertAgendamentosFuturos, setAlertAgendamentosFuturos] = useState(false)
 
-  const [leaders , setLeaders] = useState([])
+  const [leaders, setLeaders] = useState([])
 
   const fillterCallback = async (filter) => {
     if (filter.input != '') {
@@ -103,7 +103,6 @@ const Cidadoes = () => {
   }
 
   const onSubmit = async (cidadaoData) => {
-    
     let status = 0
     if (cidadaoData.edite) {
       delete cidadaoData.edite
@@ -209,16 +208,15 @@ const Cidadoes = () => {
     reset({})
   }
 
-  const Leaders = useCallback(async () =>{
-    const {data} = await instanceAxios.get('/leader')
+  const Leaders = useCallback(async () => {
+    const { data } = await instanceAxios.get('/leader')
 
     setLeaders(data)
-    
-  },[])
+  }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     Leaders()
-  },[])
+  }, [])
 
   return (
     <>
@@ -612,16 +610,11 @@ const Cidadoes = () => {
                   floatingLabel="Lider Responsáve"
                   aria-label="Floating label select example"
                   {...register('leader_id')}
-
                 >
                   <option value={''}>Sem Lider</option>
-                  {
-                    leaders.map((leader) => {
-                      return (
-                        <option value={leader.id}> {leader.name}</option>
-                      )
-                    })
-                  }
+                  {leaders.map((leader) => {
+                    return <option value={leader.id}> {leader.name}</option>
+                  })}
                 </CFormSelect>
               </Box>
 
