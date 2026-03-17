@@ -611,7 +611,7 @@ const Cidadoes = () => {
                   style={{ marginBottom: 3 }}
                   floatingLabel="Lider Responsáve"
                   aria-label="Floating label select example"
-                  {...register('id_lider')}
+                  {...register('leader_id')}
 
                 >
                   <option value={''}>Sem Lider</option>
