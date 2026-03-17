@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import ModalDash from '../../components/Modal/ModalDash'
 import HeaderSeach from '../../components/header/HeaderSeach'
 import ListView from '../../components/ListView/ListView'
@@ -14,6 +14,7 @@ import {
   CFormCheck,
   CFormInput,
   CFormLabel,
+  CFormSelect,
   CModal,
   CModalBody,
   CModalHeader,
@@ -71,6 +72,8 @@ const Cidadoes = () => {
   //com agendamentos
   const [alertAgendamentosFuturos, setAlertAgendamentosFuturos] = useState(false)
 
+  const [leaders , setLeaders] = useState([])
+
   const fillterCallback = async (filter) => {
     if (filter.input != '') {
       const { data } = await instanceAxios.get('/citizen/show', {
@@ -100,6 +103,7 @@ const Cidadoes = () => {
   }
 
   const onSubmit = async (cidadaoData) => {
+    
     let status = 0
     if (cidadaoData.edite) {
       delete cidadaoData.edite
@@ -204,6 +208,17 @@ const Cidadoes = () => {
   const CloseAdd = () => {
     reset({})
   }
+
+  const Leaders = useCallback(async () =>{
+    const {data} = await instanceAxios.get('/leader')
+
+    setLeaders(data)
+    
+  },[])
+
+  useEffect(()=>{
+    Leaders()
+  })
 
   return (
     <>
@@ -456,7 +471,7 @@ const Cidadoes = () => {
                 floatingClassName="mb-3"
                 floatingLabel="RG"
                 placeholder="rg"
-                {...register('rg', { required: true })}
+                {...register('rg')}
               />
 
               <CFormInput
@@ -587,29 +602,28 @@ const Cidadoes = () => {
                 />
               </Box>
 
-              {/* <Box>
+              <Box>
                 <CFormLabel style={{ padding: 3, fontWeight: 'bold' }}>
                   Lider Responsavel
                 </CFormLabel>
 
                 <CFormSelect
-                  onChangeCapture={onChageLider}
                   style={{ marginBottom: 3 }}
                   floatingLabel="Lider Responsáve"
                   aria-label="Floating label select example"
-                  {...register('codigo_lider')}
+                  {...register('id_lider')}
 
                 >
                   <option value={''}>Sem Lider</option>
                   {
-                    lideres.map((lider) => {
+                    leaders.map((leader) => {
                       return (
-                        <option value={lider.codigo}> {lider.nome}[{lider.codigo}] - {lider.area.tipo} {lider.area.area} </option>
+                        <option value={leader.id}> {leader.name}</option>
                       )
                     })
                   }
                 </CFormSelect>
-              </Box> */}
+              </Box>
 
               <input type="submit" hidden id="submitbtn" />
             </CForm>
