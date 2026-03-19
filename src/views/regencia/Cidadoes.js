@@ -205,7 +205,6 @@ const Cidadoes = () => {
   }
 
   const CloseAdd = () => {
-    reset({})
   }
 
   const Leaders = useCallback(async () => {
@@ -625,7 +624,7 @@ const Cidadoes = () => {
       </ModalDash>
 
       <HeaderSeach
-        placeholder={'Nome / CPF / RG'}
+        placeholder={'Nome / CPF / RG / Código de Lider'}
         fillterCallback={fillterCallback}
         OnChangeArea={OnChangeArea}
         nameFiltro={''}
