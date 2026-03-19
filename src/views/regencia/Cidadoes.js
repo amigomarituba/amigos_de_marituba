@@ -204,8 +204,7 @@ const Cidadoes = () => {
     document.getElementById('submitbtn').click()
   }
 
-  const CloseAdd = () => {
-  }
+  const CloseAdd = () => {}
 
   const Leaders = useCallback(async () => {
     const { data } = await instanceAxios.get('/leader')
@@ -450,6 +449,7 @@ const Cidadoes = () => {
                 floatingClassName="mb-3"
                 floatingLabel="Nome"
                 placeholder="nome"
+                className="text-uppercase"
                 {...register('name', { required: true })}
               />
 
@@ -542,6 +542,7 @@ const Cidadoes = () => {
                       type="text"
                       floatingClassName="mb-3"
                       floatingLabel="lougradoro"
+                      className="text-uppercase"
                       placeholder="lougradoro"
                       {...register('citizens_address.street', { required: true })}
                     />
@@ -578,6 +579,7 @@ const Cidadoes = () => {
                   type="text"
                   floatingClassName="mb-3"
                   floatingLabel="Complemento"
+                  className="text-uppercase"
                   placeholder="Complento"
                   {...register('citizens_address.complement')}
                 />
@@ -594,6 +596,7 @@ const Cidadoes = () => {
                   type="text"
                   floatingClassName="mb-3"
                   floatingLabel="Cidade"
+                  className="text-uppercase"
                   placeholder="lougadoro"
                   {...register('citizens_address.city')}
                 />
