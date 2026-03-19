@@ -204,7 +204,9 @@ const Cidadoes = () => {
     document.getElementById('submitbtn').click()
   }
 
-  const CloseAdd = () => {}
+  const CloseAdd = () => {
+    reset({})
+  }
 
   const Leaders = useCallback(async () => {
     const { data } = await instanceAxios.get('/leader')
