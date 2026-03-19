@@ -28,6 +28,7 @@ const Login = () => {
   const userSession = useDispatch()
 
   const [isUser, setIsUser] = useState(false)
+  const [isUserConfirme, setIsUserConfirme] = useState(false)
 
   const { reset, handleSubmit, register } = useForm()
 
@@ -39,8 +40,18 @@ const Login = () => {
     try {
       const { data } = await instanceAxios.post('/session', dataSession)
       instanceAxios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+      setIsUserConfirme(true)
+
       userSession({ type: 'set', user: data })
       localStorage.setItem('@user', JSON.stringify(data))
+
+      setTimeout(() => {
+          userSession({ type: 'set', user: data })
+          localStorage.setItem('@user',JSON.stringify(data))
+          handleClose()
+        },1000)
+        
     } catch {
       setIsUser(true)
       setTimeout(() => {
@@ -57,6 +68,13 @@ const Login = () => {
         handleClose={handleClose}
         severity={'warning'}
         message={'Usúario não registrado no sistema'}
+      />
+
+      <AlertRegistre
+        open={isUserConfirme}
+        handleClose={handleClose}
+        severity={'success'}
+        message={`Usúario Atenticado. Bem-Vindo!`}
       />
 
       <CContainer style={{ width: '60rem' }}>
@@ -110,7 +128,6 @@ const Login = () => {
           </CCard>
 
           <CCard className="text-white bg-primary p-2 d-none d-md-block">
-           
             <CCardBody className="text-center">
               <CImage src={'/api/logo.png'} width={'150rem'} style={{ marginBottom: 3 }} />
               <p>Projeto Amigos de Marituba, é uma projeto apoiado pela uzina da paz de marituba</p>
