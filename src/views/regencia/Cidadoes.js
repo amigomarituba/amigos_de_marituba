@@ -612,7 +612,7 @@ const Cidadoes = () => {
                   style={{ marginBottom: 3 }}
                   floatingLabel="Lider Responsáve"
                   aria-label="Floating label select example"
-                  {...register('leader.id')}
+                  {...register('leader.id',{required:true})}
                 >
                   <option value={''}>Sem Lider</option>
                   {leaders.map((leader) => {
