@@ -588,6 +588,7 @@ const Cidadoes = () => {
                   type="text"
                   floatingClassName="mb-3"
                   floatingLabel="Bairro"
+                  className="text-uppercase"
                   placeholder="lougadoro"
                   {...register('citizens_address.district', { required: true })}
                 />
