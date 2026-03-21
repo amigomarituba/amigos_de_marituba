@@ -438,12 +438,7 @@ const Cidadoes = () => {
         ref={modalVisible}
       >
         <ListView>
-          {/* <CContainer 
-        onClick={handleClickImg}
-        style={{width:'100%', display:'flex', justifyContent:'center', marginBottom:20}}>
-          <input type='file' hidden id='inputimg'/>
-          <CAvatar src={imgCreateLider} style={{ width: '110px', height: '110px',border:'0.5px solid #ccd1d7', cursor:'pointer'}} />
-        </CContainer> */}
+          
           <CContainer className="p-0">
             <CForm onSubmit={handleSubmit(onSubmit)}>
               <CFormInput

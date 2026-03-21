@@ -266,7 +266,7 @@ const Lideres = () => {
                 floatingClassName="mb-3"
                 floatingLabel="Email"
                 placeholder="email@gmail.com"
-                {...register('email', { required: true })}
+                {...register('email')}
               />
 
               <h5>Contato</h5>

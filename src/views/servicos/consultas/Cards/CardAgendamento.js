@@ -22,7 +22,6 @@ import {
 } from '@coreui/react'
 import { formatDate } from '../../../../utils/Utils'
 import { fomartCPF, handleFomartPhone } from '../../../regencia/Cards/Utils/FormatInput'
-import { number } from 'prop-types'
 
 const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulacao }) => {
   const [anchorEl, setAnchorEl] = useState(null)

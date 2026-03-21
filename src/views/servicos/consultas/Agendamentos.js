@@ -16,15 +16,16 @@ import ModalDash from '../../../components/Modal/ModalDash'
 import { cilCalendar } from '@coreui/icons'
 import CardAgendamento from './Cards/CardAgendamento'
 import ListView from '../../../components/ListView/ListView'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { instanceAxios } from '../../../config/api'
 import DialogModal from '../../../components/DialogModal/DialogModal'
 import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
 import { formatDate, formatDateN } from '../../../utils/Utils'
 import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
+import SelectChange from '../../../components/SelectChange'
 
 const Agendamentos = () => {
-  const { reset, register, handleSubmit } = useForm() //fomulario
+  const { reset, register, handleSubmit, control } = useForm() //fomulario
 
   const [create, setCreate] = useState(false)
   const [dayNow, setDayNow] = useState('')
@@ -52,7 +53,7 @@ const Agendamentos = () => {
   const [alertDeleteOpen, setAlertDeleteOpen] = useState(false)
   const [alertDeleteError, setAlertDeleteError] = useState(false)
 
-  const [ alertNotSheduller , setAlertNotSheduller] = useState(false)
+  const [alertNotSheduller, setAlertNotSheduller] = useState(false)
 
   const handleClose = () => {
     setAlertOpen(false)
@@ -101,6 +102,7 @@ const Agendamentos = () => {
   }
 
   const onsubmit = async (agendamento) => {
+
     if (dayNow == '') {
       agendamento.date = formatDateN(new Date())
     } else {
@@ -334,58 +336,12 @@ const Agendamentos = () => {
                 </CFormLabel>
               </Box>
               <Box>
-                <CFormLabel style={{ padding: 2, fontWeight: 'bold' }}>Buscar Cidadão</CFormLabel>
 
-                <Box display={'flex'} gap={1}>
-                  <Box
-                    sx={{
-                      width: '100%',
-                    }}
-                  >
-                    <CFormInput
-                      id="input"
-                      type="text"
-                      floatingClassName="mb-3"
-                      floatingLabel="CPF/RG/NOME"
-                      placeholder="CPF/RG/NOME"
-                      onChange={handleCidadao}
-                    />
-                  </Box>
-
-                  <Box>
-                    <CButton
-                      color="primary"
-                      variant="outline"
-                      style={{
-                        height: '80%',
-                      }}
-                      onClick={sendCidadoes}
-                    >
-                      Buscar
-                    </CButton>
-                  </Box>
-                </Box>
-
-                <Box>
-                  <CFormSelect
-                    style={{ marginBottom: 3 }}
-                    floatingLabel="Selecionar Cidadão"
-                    aria-label="Floating label select example"
-                    {...register('citizen_id', { required: true })}
-                  >
-                    <option value={''}>
-                      {listaCidadoes.length != 0
-                        ? 'Selecione o Cidadão'
-                        : 'Nenhum cidadão encontrado'}
-                    </option>
-
-                    {listaCidadoes.map((cidadao) => (
-                      <option value={cidadao.id}>
-                        {cidadao.name} - {formatDate(cidadao.birth)} - {fomartCPF(cidadao.cpf)}
-                      </option>
-                    ))}
-                  </CFormSelect>
-                </Box>
+                <Controller
+                  name="citizen_id"
+                  control={control}
+                  render={({ field }) => <SelectChange {...field} />}
+                />
 
                 <Box sx={{ marginTop: 2 }}>
                   <CFormSelect
@@ -401,22 +357,13 @@ const Agendamentos = () => {
                   </CFormSelect>
                 </Box>
 
-                {/* <Box sx={{marginTop:2}}>
-                  <CFormInput
-                      type="time"
-                      floatingClassName="mb-3"
-                      floatingLabel="Horário"
-                      placeholder="Horário"
-                      // {...register('time', { required: true })}
-                    />
-                </Box> */}
 
                 <Box sx={{ marginTop: 2 }}>
                   <CFormSelect
                     style={{ marginBottom: 3 }}
                     floatingLabel="Lider Responsavel"
                     aria-label="Floating label select example"
-                    {...register('leader_id', { required: true })}
+                    {...register('leader_id')}
                   >
                     <option value={''}>Selecionar Lider</option>
                     {lideres.map((lider) => (
