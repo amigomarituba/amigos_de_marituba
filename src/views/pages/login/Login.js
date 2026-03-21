@@ -18,7 +18,7 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilHappy, cilLockLocked, cilLockUnlocked, cilLowVision, cilUser } from '@coreui/icons'
 import { useForm } from 'react-hook-form'
 import { instanceAxios } from '../../../config/api'
 import { useDispatch } from 'react-redux'
@@ -26,6 +26,8 @@ import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
 
 const Login = () => {
   const userSession = useDispatch()
+
+  const [visionPassword, setVisionPassword] = useState(false)
 
   const [isUser, setIsUser] = useState(false)
   const [isUserConfirme, setIsUserConfirme] = useState(false)
@@ -99,11 +101,14 @@ const Login = () => {
                     <CIcon icon={cilLockLocked} />
                   </CInputGroupText>
                   <CFormInput
-                    type="password"
+                    type={ visionPassword ? "text" : "password"}
                     placeholder="Senha"
                     autoComplete="current-password"
                     {...register('password', { required: true })}
                   />
+                  <CButton  color='primary' onClick={()=>setVisionPassword(!visionPassword)}>
+                    <CIcon icon={visionPassword ? cilLockUnlocked : cilLockLocked} size='lg'/>
+                  </CButton >
                 </CInputGroup>
                 <CRow>
                   <CCol xs={6}>
