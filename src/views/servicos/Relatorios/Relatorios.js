@@ -116,8 +116,6 @@ const Relatorios = () => {
               <option value=''>Todos</option>
               <option value='0'>Ausente</option>
               <option value='1'>Presente</option>
-
-
             </CFormSelect>
 
           </Box>
@@ -184,7 +182,7 @@ const Relatorios = () => {
                       
                       <CTableRow key={index}>
                         <CTableDataCell >{agendamento.date_string}</CTableDataCell>
-                        <CTableDataCell >{agendamento.name}</CTableDataCell>
+                        <CTableDataCell className='text-uppercase' >{agendamento.name}</CTableDataCell>
                         <CTableDataCell >{fomartCPF(agendamento.cpf)}</CTableDataCell>
                         <CTableDataCell >{agendamento.rg}</CTableDataCell>
                         <CTableDataCell >{formatDate(agendamento.birth)}</CTableDataCell>
