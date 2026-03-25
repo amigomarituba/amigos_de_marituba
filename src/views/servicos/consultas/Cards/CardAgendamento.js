@@ -234,7 +234,7 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
               }}
             >
               <Box>
-                <span style={{ fontSize: 20 }}>{data.name}</span>
+                <span style={{ fontSize: 20, textTransform:'uppercase' }}>{data.name}</span>
               </Box>
 
               <Box sx={{ gap: 1, display: 'flex' }}>
@@ -259,7 +259,7 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
                   ''
                 )}
 
-                {!menuDateResender ? (
+                {/* {!menuDateResender ? (
                   <span>
                     <CPopover
                       content="Não e possível delete ou marca presença em agendamentos passados"
@@ -273,7 +273,7 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
                   </span>
                 ) : (
                   ''
-                )}
+                )} */}
               </Box>
             </Box>
 

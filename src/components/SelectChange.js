@@ -43,6 +43,7 @@ function SelectChange({ value, onChange }) {
             setShow(false)
           }, 200)
         }
+        className='text-uppercase'
         value={search}
       />
 
