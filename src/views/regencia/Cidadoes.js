@@ -467,7 +467,7 @@ const Cidadoes = () => {
 
               {
                 errors.cpf && (
-                  <CAlert className='danger'>{errors.cpf.message}</CAlert>
+                  <span className='text-danger'>{errors.cpf.message}</span>
                 )
               }
 
