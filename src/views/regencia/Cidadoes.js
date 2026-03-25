@@ -467,6 +467,8 @@ const Cidadoes = () => {
                     message: 'digite apenas numeros',
                   },
                 })}
+
+                className={!errors.cpf ? "mb-3" : ''}
               />
 
               {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
