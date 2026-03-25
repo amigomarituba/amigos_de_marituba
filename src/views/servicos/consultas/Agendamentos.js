@@ -102,7 +102,6 @@ const Agendamentos = () => {
   }
 
   const onsubmit = async (agendamento) => {
-
     if (dayNow == '') {
       agendamento.date = formatDateN(new Date())
     } else {
@@ -113,32 +112,30 @@ const Agendamentos = () => {
 
     const date_now = new Date().setHours(0, 0, 0, 0)
 
-    if (!(date_after < date_now) || formatDateN(new Date()) === formatDateN(dayNow)) {
-      agendamento.presence = false
-      agendamento.regulation = false
+    agendamento.presence = false
+    agendamento.regulation = false
 
-      const { status } = await instanceAxios.post('/scheduling/create', agendamento)
+    const { status } = await instanceAxios.post('/scheduling/create', agendamento)
 
-      if (status == 200) {
-        setAlertOpen(true)
-      } else {
-        setAlertErro(true)
-      }
-
-      setTimeout(() => {
-        setAlertOpen(false)
-        setAlertOpen(false)
-      }, 3000)
-
-      setCreate(!create)
-      modalVisible.current.visibleModal()
-    }else {
-      setAlertNotSheduller(true)
-
-      setTimeout(() => {
-        setAlertNotSheduller(false)
-      }, 3000)
+    if (status == 200) {
+      setAlertOpen(true)
+    } else {
+      setAlertErro(true)
     }
+
+    setTimeout(() => {
+      setAlertOpen(false)
+      setAlertOpen(false)
+    }, 3000)
+
+    setCreate(!create)
+    modalVisible.current.visibleModal()
+
+    // setAlertNotSheduller(true)
+
+    // setTimeout(() => {
+    //   setAlertNotSheduller(false)
+    // }, 3000)
   }
 
   const handleButtonSalveModal = () => {
@@ -336,7 +333,6 @@ const Agendamentos = () => {
                 </CFormLabel>
               </Box>
               <Box>
-
                 <Controller
                   name="citizen_id"
                   control={control}
@@ -356,7 +352,6 @@ const Agendamentos = () => {
                     ))}
                   </CFormSelect>
                 </Box>
-
 
                 <Box sx={{ marginTop: 2 }}>
                   <CFormSelect
