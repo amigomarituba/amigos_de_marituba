@@ -3,10 +3,7 @@
     {
       "source": "/api/:path*",
       "destination": "http://amigo7732.c44.integrator.host:62863/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/"
     }
-  ]
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "/" }]
 }
