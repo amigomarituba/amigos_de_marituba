@@ -4,6 +4,7 @@ import HeaderSeach from '../../components/header/HeaderSeach'
 import ListView from '../../components/ListView/ListView'
 import CardCidadao from './Cards/CardCidadao'
 import {
+  CAlert,
   CBadge,
   CButton,
   CButtonGroup,
@@ -39,7 +40,7 @@ import { useSelector } from 'react-redux'
 const Cidadoes = () => {
   const user = useSelector((state) => state.user)
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset , formState:{errors}} = useForm()
 
   const [create, setCreate] = useState(false) //atualizar a pagina
 
@@ -463,6 +464,12 @@ const Cidadoes = () => {
                   },
                 })}
               />
+
+              {
+                errors.cpf && (
+                  <CAlert className='danger'>{errors.cpf.message}</CAlert>
+                )
+              }
 
               <CFormInput
                 type="text"
