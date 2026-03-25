@@ -26,7 +26,7 @@ import { useSelector } from 'react-redux'
 const Lideres = () => {
   const user = useSelector((state) => state.user)
   const { fill } = useParams() // parametro de busca da url
-  const { reset, register, handleSubmit } = useForm() //fomulario
+  const { reset, register, handleSubmit, formState:{errors} } = useForm() //fomulario
 
   const [lideres, setLideres] = useState([]) // dados do lider
   // const [areas, setAreas] = useState([]) // lista as areas para cricar o lider
@@ -246,7 +246,6 @@ const Lideres = () => {
               <CFormInput
                 type="text"
                 maxLength={11}
-                floatingClassName="mb-3"
                 floatingLabel="CPF"
                 placeholder="Nome do Lider"
                 {...register('cpf', {
@@ -254,10 +253,14 @@ const Lideres = () => {
                   maxLength: 11,
                   pattern: {
                     value: /^[0-9]+$/,
-                    message: 'digite apenas numeros',
+                    message: ' digite apenas numeros',
                   },
                 })}
+
+                className={!errors.cpf ? "mb-3" : ''}
               />
+
+               {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
 
               <CFormInput
                 type="date"
