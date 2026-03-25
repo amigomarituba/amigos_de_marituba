@@ -40,7 +40,12 @@ import { useSelector } from 'react-redux'
 const Cidadoes = () => {
   const user = useSelector((state) => state.user)
 
-  const { register, handleSubmit, reset , formState:{errors}} = useForm()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
 
   const [create, setCreate] = useState(false) //atualizar a pagina
 
@@ -452,7 +457,6 @@ const Cidadoes = () => {
 
               <CFormInput
                 type="text"
-                floatingClassName="mb-3"
                 floatingLabel="CPF"
                 maxLength={11}
                 placeholder="cpf"
@@ -465,11 +469,8 @@ const Cidadoes = () => {
                 })}
               />
 
-              {
-                errors.cpf && (
-                  <span className='text-danger'>{errors.cpf.message}</span>
-                )
-              }
+              {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
+              
 
               <CFormInput
                 type="text"
