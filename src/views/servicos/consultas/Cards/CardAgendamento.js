@@ -187,16 +187,10 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
           'aria-labelledby': 'basic-button',
         }}
       >
-        {menuDateResender ? (
-          <>
-            <MenuItem onClick={handleMenuDelete}>
-              <DeleteIcon sx={{ marginRight: 1 }} />
-              Deletar
-            </MenuItem>
-          </>
-        ) : (
-          ''
-        )}
+        <MenuItem onClick={handleMenuDelete}>
+          <DeleteIcon sx={{ marginRight: 1 }} />
+          Deletar
+        </MenuItem>
 
         <MenuItem onClick={handleMenuConfim}>
           <CheckCircleIcon sx={{ marginRight: 1 }} />
