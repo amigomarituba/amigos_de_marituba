@@ -9,7 +9,7 @@ export default defineConfig(({mode}) => {
   
   return {
     
-    base: './',
+    base: '/',
     build: {
       outDir: 'dist',
     },
