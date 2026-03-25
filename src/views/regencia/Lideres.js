@@ -249,7 +249,14 @@ const Lideres = () => {
                 floatingClassName="mb-3"
                 floatingLabel="CPF"
                 placeholder="Nome do Lider"
-                {...register('cpf', { required: true, maxLength: 11 })}
+                {...register('cpf', {
+                  required: 'Campo Obrigatorio',
+                  maxLength: 11,
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'digite apenas numeros',
+                  },
+                })}
               />
 
               <CFormInput

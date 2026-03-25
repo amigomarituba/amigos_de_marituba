@@ -438,7 +438,6 @@ const Cidadoes = () => {
         ref={modalVisible}
       >
         <ListView>
-          
           <CContainer className="p-0">
             <CForm onSubmit={handleSubmit(onSubmit)}>
               <CFormInput
@@ -456,7 +455,13 @@ const Cidadoes = () => {
                 floatingLabel="CPF"
                 maxLength={11}
                 placeholder="cpf"
-                {...register('cpf', { required: true })}
+                {...register('cpf', {
+                  required: 'Campo obrigatorio',
+                  pattern: {
+                    value: /^[0-9]+$/,
+                    message: 'digite apenas numeros',
+                  },
+                })}
               />
 
               <CFormInput
@@ -609,7 +614,7 @@ const Cidadoes = () => {
                   style={{ marginBottom: 3 }}
                   floatingLabel="Lider Responsáve"
                   aria-label="Floating label select example"
-                  {...register('leader.id',{required:true})}
+                  {...register('leader.id', { required: true })}
                 >
                   <option value={''}>Sem Lider</option>
                   {leaders.map((leader) => {
