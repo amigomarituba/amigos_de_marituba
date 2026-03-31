@@ -1,37 +1,24 @@
-import { cilBuilding, cilClipboard, cilOptions, cilUser } from '@coreui/icons'
+import { cilOptions, cilUser } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import {
-  CAvatar,
   CButton,
   CCard,
   CCardBody,
-  CCardText,
-  CCardTitle,
   CCol,
   CContainer,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle,
-  CNavItem,
   CRow,
-  CNavLink,
-  CFormInput,
   CFormLabel,
   CFormText,
   CTooltip,
 } from '@coreui/react'
-import { Box, Button, Container, Drawer, Menu, MenuItem } from '@mui/material'
+import { Box, Button, Drawer, Menu, MenuItem } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 import HistoryIcon from '@mui/icons-material/History'
-import { NavLink } from 'react-router-dom'
-import ContainerTitle from './Utils/ContainerTitle'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
-import ListView from '../../../components/ListView/ListView'
 import { formatDate } from '../../../utils/Utils'
 import { fomartCPF } from './Utils/FormatInput'
 import { useSelector } from 'react-redux'
@@ -118,7 +105,7 @@ const CardCidadao = ({ data, editerCidadao, deleteCidadao, historico }) => {
   }
 
   return (
-    <CCard className={`border-start border-start-5 ${colorBorderLider}`}>
+    <CCard className={`border-start border-start-5 ${colorBorderLider} mb-2`}>
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
@@ -239,7 +226,10 @@ const CardCidadao = ({ data, editerCidadao, deleteCidadao, historico }) => {
 
             <BoxInfo title={'RG'} value={data.rg} />
 
-            <BoxInfo title={'Lider Responsavel'} value={`[${data.leader.uid}]:${data.leader.name}`} />
+            <BoxInfo
+              title={'Lider Responsavel'}
+              value={`[${data.leader.uid}]:${data.leader.name}`}
+            />
 
             <Box sx={{ marginBottom: 1 }}>
               <CFormLabel

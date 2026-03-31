@@ -7,6 +7,7 @@ import {
   CFormSelect,
   CFormTextarea,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import { Box } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
@@ -25,10 +26,18 @@ import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
 import SelectChange from '../../../components/SelectChange'
 
 const Agendamentos = () => {
-  const { reset, register, handleSubmit, control } = useForm() //fomulario
+  const {
+    reset,
+    register,
+    handleSubmit,
+    control,
+    formState: { isSubmitting },
+  } = useForm() //fomulario
 
   const [create, setCreate] = useState(false)
   const [dayNow, setDayNow] = useState('')
+
+  const [spinnnerState, setSpinnerState] = useState(false)
 
   const [inputCidadao, setInputCidadao] = useState('')
 
@@ -84,10 +93,18 @@ const Agendamentos = () => {
   }
 
   const apiDayShow = async (date) => {
-    const { data } = await instanceAxios.get('/scheduling/show', {
-      params: { date: date },
-    })
-    return data
+    setSpinnerState(true)
+    try{
+      const { data } = await instanceAxios.get('/scheduling/show', {
+        params: { date: date },
+      })
+      return data
+
+    }catch {
+      throw Error()
+    } finally {
+      setSpinnerState(false)
+    }
   }
 
   const handleSelectDay = async (date) => {
@@ -95,6 +112,7 @@ const Agendamentos = () => {
     const data = await apiDayShow(dateF)
     setDayNow(dateF)
     try {
+
       setDay(data)
     } catch {
       setDay([])
@@ -225,6 +243,8 @@ const Agendamentos = () => {
   }
 
   const api = async () => {
+    setSpinnerState(true)
+
     try {
       const leaders = await instanceAxios.get(`/leader`)
       const services = await instanceAxios.get(`/service`)
@@ -244,6 +264,8 @@ const Agendamentos = () => {
       }
     } catch {
       localStorage.clear()
+    } finally {
+      setSpinnerState(false)
     }
   }
 
@@ -313,7 +335,13 @@ const Agendamentos = () => {
             Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
             {day.filter((d) => d.presence == 0).length}
           </h6>
-          <ListCardAgenda data={day} />
+          {spinnnerState ? (
+            <div className="d-flex justify-content-center mt-5">
+              <CSpinner />
+            </div>
+          ) : (
+            <ListCardAgenda data={day} />
+          )}
         </CCol>
       </CRow>
 
@@ -323,6 +351,7 @@ const Agendamentos = () => {
         handleButtonSalveModal={handleButtonSalveModal}
         CloseAdd={CloseAdd}
         ref={modalVisible}
+        isSpinner={isSubmitting}
       >
         <ListView>
           <CCol>

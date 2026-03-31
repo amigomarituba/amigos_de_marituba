@@ -1,4 +1,4 @@
-import { CCol, CRow, CWidgetStatsB } from '@coreui/react'
+import { CCol, CPlaceholder, CRow, CSpinner, CWidgetStatsB } from '@coreui/react'
 import { useEffect, useRef, useState } from 'react'
 import { instanceAxios } from '../../config/api'
 import { CChart } from '@coreui/react-chartjs'
@@ -7,43 +7,56 @@ import { getStyle } from '@coreui/utils'
 const Dashboard = () => {
   const chartRef = useRef(null)
 
+  const [spinnnerState, setSpinnerState] = useState(false)
+
   const [totalAgendamentos, setTotalAgendamentos] = useState(0)
   const [totalAusencias, setTotalAusencias] = useState(0)
   const [totalPresencas, setTotalPresencas] = useState(0)
-  const [graficService , setGraficService] = useState([])
-  const [ total, setTotal ] = useState({})
-  const [totalLider, setTotalLider ] = useState({})
+  const [graficService, setGraficService] = useState([])
+  const [total, setTotal] = useState({})
+  const [totalLider, setTotalLider] = useState({})
 
-  const api = async ()=>{
+  const api = async () => {
+    setSpinnerState(true)
+
     try {
-
       const total = await instanceAxios.get('/report/dashboard/total')
       const grafic_services = await instanceAxios.get('/report/dashboard/grafic')
       const data_leaders = await instanceAxios.get('/report/dashboard/leaders')
       const total_agendamentos = await instanceAxios.get('/report/dashboard/schedulings')
 
-      
       setTotalLider(data_leaders.data)
-      setTotal(total.data[0] ? total.data[0] : {citizen:0,leader:0})
+      setTotal(total.data[0] ? total.data[0] : { citizen: 0, leader: 0 })
       setGraficService(grafic_services.data)
-  
-      setTotalAgendamentos(total_agendamentos.data[0] ? total_agendamentos.data[0].total : 0 )
+
+      setTotalAgendamentos(total_agendamentos.data[0] ? total_agendamentos.data[0].total : 0)
       setTotalAusencias(total_agendamentos.data[0] ? total_agendamentos.data[0].absence : 0)
       setTotalPresencas(total_agendamentos.data[0] ? total_agendamentos.data[0].attendance : 0)
-    } catch{
+    } catch {
       localStorage.clear()
     }
-    
+    setSpinnerState(false)
   }
-  
-  useEffect(()=>{
-   
-    api()
 
-  },[])
+  useEffect(() => {
+    api()
+  }, [])
 
   const data = {
-    labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio ', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro','Novembro','Dezembro'], // 9 labels
+    labels: [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio ',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ], // 9 labels
     datasets: graficService,
     //[
     //   {
@@ -82,13 +95,12 @@ const Dashboard = () => {
           color: getStyle('--cui-body-color'),
         },
       },
-    }, 
+    },
     scales: {
       x: {
-       
         ticks: {
           color: getStyle('--cui-body-color'),
-        }, 
+        },
         type: 'category',
       },
       y: {
@@ -102,35 +114,35 @@ const Dashboard = () => {
 
   return (
     <CCol>
-      <CRow >
-        <h4 className='mb-3'>Registros</h4>
+      <CRow>
+        <h4 className="mb-3">Registros</h4>
         <CCol>
           <CWidgetStatsB
             className="mb-3"
             inverse
-            progress={{ value:total.citizen}}
+            progress={{ value: total.citizen }}
             style={{
-              fontSize:17
+              fontSize: 17,
             }}
             title="Cidadões"
-            text='Cidadões Cadastrados no Sistema'
-            value={total.citizen}
+            text="Cidadões Cadastrados no Sistema"
+            value={spinnnerState ? <CSpinner size="sm" /> : total.citizen}
           />
         </CCol>
 
         <CCol>
-        <CWidgetStatsB
+          <CWidgetStatsB
             className="mb-3"
             inverse
-            progress={{ value: total.leader  }}
+            progress={{ value: total.leader }}
             title="Lideres"
-            text='Lideres Cadastrados no Sistema'
-            value={ total.leader }
+            text="Lideres Cadastrados no Sistema"
+            value={spinnnerState ? <CSpinner size="sm" /> : total.leader}
           />
         </CCol>
       </CRow>
-      <CRow >
-        <h4 className='mb-3'>Agendamentos</h4>
+      <CRow>
+        <h4 className="mb-3">Agendamentos</h4>
         <CCol>
           <CWidgetStatsB
             className="mb-3"
@@ -138,48 +150,52 @@ const Dashboard = () => {
             inverse
             progress={{ value: totalAgendamentos }}
             title="Total"
-            text='Agendamentos Registrados'
-            value={totalAgendamentos}
+            text="Agendamentos Registrados"
+            value={spinnnerState ? <CSpinner size="sm" /> : totalAgendamentos}
           />
         </CCol>
 
         <CCol>
-        <CWidgetStatsB
+          <CWidgetStatsB
             className="mb-3"
             color="primary"
             inverse
             progress={{ value: totalPresencas }}
             title="Compareceram"
-            text='cidadões que compareceram'
-            value={totalPresencas}
+            text="cidadões que compareceram"
+            value={spinnnerState ? <CSpinner size="sm" /> : totalPresencas}
           />
         </CCol>
 
         <CCol>
-        <CWidgetStatsB
+          <CWidgetStatsB
             className="mb-3"
             color="danger"
             inverse
             progress={{ value: totalAusencias }}
             title="Não compareceram"
-            text='Cidadões que não comparecerão'
-            value={totalAusencias}
+            text="Cidadões que não comparecerão"
+            value={spinnnerState ? <CSpinner size="sm" /> : totalAusencias}
           />
         </CCol>
       </CRow>
 
-      <CRow style={{justifyContent:'center', marginTop:20, marginBottom:45}} className=''>
+      <CRow style={{ justifyContent: 'center', marginTop: 20, marginBottom: 45 }} className="">
         <h4>Serviços por Mês</h4>
-          <CChart type="bar" style={{width:'80%'}} options={options} data={data} ref={chartRef} />
+        <CChart type="bar" style={{ width: '80%' }} options={options} data={data} ref={chartRef} />
       </CRow>
 
-      <CRow style={{justifyContent:'center', marginTop:20, marginBottom:45}}>
+      <CRow style={{ justifyContent: 'center', marginTop: 20, marginBottom: 45 }}>
         <h3>Agendamentos por Líder</h3>
-          <CChart type="bar" style={{width:'80%'}} options={options} data={totalLider} ref={chartRef} />
+        <CChart
+          type="bar"
+          style={{ width: '80%' }}
+          options={options}
+          data={totalLider}
+          ref={chartRef}
+        />
       </CRow>
-      
     </CCol>
-
   )
 }
 

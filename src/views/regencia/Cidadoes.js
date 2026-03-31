@@ -21,6 +21,7 @@ import {
   CModalHeader,
   CModalTitle,
   CRow,
+  CSpinner,
   CTable,
   CTableBody,
   CTableDataCell,
@@ -44,8 +45,10 @@ const Cidadoes = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm()
+
+  const [spinnnerState, setSpinnerState] = useState(false)
 
   const [create, setCreate] = useState(false) //atualizar a pagina
 
@@ -81,6 +84,7 @@ const Cidadoes = () => {
   const [leaders, setLeaders] = useState([])
 
   const fillterCallback = async (filter) => {
+    setSpinnerState(true)
     if (filter.input != '') {
       const { data } = await instanceAxios.get('/citizen/show', {
         params: filter,
@@ -94,6 +98,8 @@ const Cidadoes = () => {
     } else {
       setCidadao([])
     }
+
+    setSpinnerState(false)
   }
 
   const handleClose = () => {
@@ -442,6 +448,7 @@ const Cidadoes = () => {
         CloseAdd={CloseAdd}
         handleButtonSalveModal={handleButtonSalveModal}
         ref={modalVisible}
+        isSpinner={isSubmitting}
       >
         <ListView>
           <CContainer className="p-0">
@@ -467,12 +474,10 @@ const Cidadoes = () => {
                     message: 'digite apenas numeros',
                   },
                 })}
-
-                className={!errors.cpf ? "mb-3" : ''}
+                className={!errors.cpf ? 'mb-3' : ''}
               />
 
               {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
-              
 
               <CFormInput
                 type="text"
@@ -648,7 +653,11 @@ const Cidadoes = () => {
       />
 
       <ListView>
-        {cidadao.length != 0 ? (
+        {spinnnerState ? (
+          <div className="d-flex justify-content-center mt-5">
+            <CSpinner />
+          </div>
+        ) : cidadao.length != 0 ? (
           cidadao.map((data) => {
             return (
               <CardCidadao

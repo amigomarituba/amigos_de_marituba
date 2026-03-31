@@ -14,6 +14,7 @@ import {
   CFormLabel,
   CInputGroup,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import CardLider from './Cards/CardLider'
 import { Box } from '@mui/material'
@@ -25,8 +26,16 @@ import { useSelector } from 'react-redux'
 
 const Lideres = () => {
   const user = useSelector((state) => state.user)
+
+  const [spinnnerState, setSpinnerState] = useState(false)
+
   const { fill } = useParams() // parametro de busca da url
-  const { reset, register, handleSubmit, formState:{errors} } = useForm() //fomulario
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm() //fomulario
 
   const [lideres, setLideres] = useState([]) // dados do lider
   // const [areas, setAreas] = useState([]) // lista as areas para cricar o lider
@@ -73,8 +82,10 @@ const Lideres = () => {
   }
 
   const api = async () => {
+    setSpinnerState(true)
     const { data } = await instanceAxios.get(`/leader`)
     setLideres(data)
+    setSpinnerState(false)
   }
 
   const handleEditer = (LiderID) => {
@@ -229,6 +240,7 @@ const Lideres = () => {
         CloseAdd={CloseAdd}
         handleButtonSalveModal={handleButtonSalveModal}
         ref={modalVisible}
+        isSpinner={isSubmitting}
       >
         <ListView>
           <CContainer className="p-0">
@@ -256,11 +268,10 @@ const Lideres = () => {
                     message: ' digite apenas numeros',
                   },
                 })}
-
-                className={!errors.cpf ? "mb-3" : ''}
+                className={!errors.cpf ? 'mb-3' : ''}
               />
 
-               {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
+              {errors.cpf && <span className="text-danger mb-3">{errors.cpf.message}</span>}
 
               <CFormInput
                 type="date"
@@ -462,16 +473,22 @@ const Lideres = () => {
       />
 
       <ListView>
-        {lideres.map((data, index) => {
-          return (
-            <CardLider
-              key={index}
-              data={data}
-              editerLider={handleEditer}
-              deleteLider={handleDelete}
-            />
-          )
-        })}
+        {spinnnerState ? (
+          <div className="d-flex justify-content-center mt-5">
+            <CSpinner />
+          </div>
+        ) : (
+          lideres.map((data, index) => {
+            return (
+              <CardLider
+                key={index}
+                data={data}
+                editerLider={handleEditer}
+                deleteLider={handleDelete}
+              />
+            )
+          })
+        )}
       </ListView>
     </>
   )
