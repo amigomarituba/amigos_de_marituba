@@ -15,7 +15,7 @@ export function useNetworkMonitor(addToast) {
         <CToastBody>
           <div className="d-flex">
             <CIcon icon={message.icon} className="me-3" size="xl" />
-            <h6 className="align-middle text-white align-items-center">{message.msg}</h6>
+            <h6 className="text-white align-items-center">{message.msg}</h6>
             <CToastClose className="me-2 m-auto" />
           </div>
         </CToastBody>
