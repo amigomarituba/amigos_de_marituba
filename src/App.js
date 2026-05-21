@@ -1,21 +1,24 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-import { CSpinner, useColorModes } from '@coreui/react'
+import { CSpinner, CToaster, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-
 
 import './scss/examples.scss'
 import { AppRoute } from './routes/app.routes'
 import { AuthRoute } from './routes/auth.routes'
+import { useNetworkMonitor } from './hook/useNetwork'
 
 const App = () => {
-  
   const user = useSelector((state) => state.user)
-  
+
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
+
+  const [toast, setToast] = useState(0)
+
+  useNetworkMonitor(setToast)
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])
@@ -29,12 +32,12 @@ const App = () => {
     }
 
     setColorMode(storedTheme)
-    
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <BrowserRouter>
-         {user?<AppRoute/>:<AuthRoute/>}
+      <CToaster push={toast} placement="top-center"  className='mt-3'/>
+      {user ? <AppRoute /> : <AuthRoute />}
     </BrowserRouter>
   )
 }
