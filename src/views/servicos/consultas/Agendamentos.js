@@ -24,6 +24,7 @@ import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
 import { formatDate, formatDateN } from '../../../utils/Utils'
 import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
 import SelectChange from '../../../components/SelectChange'
+import { object } from 'prop-types'
 
 const Agendamentos = () => {
   const {
@@ -64,6 +65,8 @@ const Agendamentos = () => {
 
   const [alertNotSheduller, setAlertNotSheduller] = useState(false)
 
+  const [filterServices, setFilterServices] = useState([])
+
   const handleClose = () => {
     setAlertOpen(false)
     setAlertErro(false)
@@ -94,13 +97,26 @@ const Agendamentos = () => {
 
   const apiDayShow = async (date) => {
     setSpinnerState(true)
-    try{
+    try {
       const { data } = await instanceAxios.get('/scheduling/show', {
         params: { date: date },
       })
-      return data
 
-    }catch {
+      const filter_count_service = data.reduce((count, item) => {
+        const key = item?.service
+        if (!count[key]) {
+          count[key] = 0
+        }
+        count[key] += 1
+
+        return count
+      }, {})
+
+      setFilterServices(filter_count_service)
+      console.log(filter_count_service)
+
+      return data
+    } catch {
       throw Error()
     } finally {
       setSpinnerState(false)
@@ -112,7 +128,6 @@ const Agendamentos = () => {
     const data = await apiDayShow(dateF)
     setDayNow(dateF)
     try {
-
       setDay(data)
     } catch {
       setDay([])
@@ -330,11 +345,20 @@ const Agendamentos = () => {
           />
         </CCol>
         <CCol xs={12} md={6}>
-          <h4 className="text-center">Cidadões Agendados</h4>
+          <h4 className="text-center">CIDADÃOS</h4>
           <h6 className="text-center mb-3">
             Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
             {day.filter((d) => d.presence == 0).length}
           </h6>
+          <div className="d-flex justify-content-center flex-row gap-3 mt-3 mb-3">
+            {Object.entries(filterServices).map(([key, value]) => {
+              return (
+                <small key={key} className='fw-bold fs-6'>
+                  {key} : {value}
+                </small>
+              )
+            })}
+          </div>
           {spinnnerState ? (
             <div className="d-flex justify-content-center mt-5">
               <CSpinner />

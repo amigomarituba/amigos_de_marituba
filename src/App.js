@@ -16,9 +16,9 @@ const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
 
-  const [toast, setToast] = useState(0)
+  // const [toast, setToast] = useState(0)
 
-  useNetworkMonitor(setToast)
+  // useNetworkMonitor(setToast)
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])
@@ -36,7 +36,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <CToaster push={toast} placement="top-center"  className='mt-3'/>
+      {/* <CToaster push={toast} placement="top-center"  className='mt-3'/> */}
       {user ? <AppRoute /> : <AuthRoute />}
     </BrowserRouter>
   )
