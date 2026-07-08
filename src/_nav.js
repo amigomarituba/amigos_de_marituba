@@ -28,7 +28,7 @@ import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
   {
     component: CNavItem,
-    name: 'Dashboard',
+    name: 'DASHBOARD',
     type:'private',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
@@ -47,21 +47,21 @@ const _nav = [
   // },
   {
     component: CNavItem,
-    name: 'Lideres',
+    name: 'LIDERES',
     type:'private',
     to: '/lideres/all',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Cidadões',
+    name: 'CIDADÃOS',
     type:'public',
     to: '/cidadoes/all',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: 'Relatorios',
+    name: 'RELATORIO',
     type:'private',
     to: '/relatorios',
     icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
@@ -69,11 +69,11 @@ const _nav = [
   {
     component: CNavTitle,
     type:'public',
-    name: 'Serviço',
+    name: 'Serviços',
   },
   {
     component: CNavItem,
-    name: 'Agendamentos',
+    name: 'AGENDAMENTOS',
     type:'public',
     to: '/servicos/agendamentos',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
@@ -85,7 +85,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Acesso e Serviços',
+    name: 'ACESSO E SERVIÇOS',
     type:'public',
     to: '/settings',
     icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
