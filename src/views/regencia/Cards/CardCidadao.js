@@ -225,7 +225,7 @@ const CardCidadao = ({ data, editerCidadao, deleteCidadao, historico }) => {
 
             <BoxInfo title={'CPF'} value={fomartCPF(data.cpf)} />
 
-            <BoxInfo title={'RG'} value={data.rg} />
+            <BoxInfo title={'TITULO'} value={data.titulo} />
 
             <BoxInfo
               title={'Lider Responsavel'}
