@@ -485,10 +485,9 @@ const Cidadoes = () => {
 
               <CFormInput
                 type="text"
-                maxLength={7}
                 floatingClassName="mb-3"
-                floatingLabel="RG"
-                placeholder="rg"
+                floatingLabel="Titulo"
+                placeholder="titulo"
                 {...register('rg')}
               />
 

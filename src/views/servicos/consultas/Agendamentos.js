@@ -346,14 +346,14 @@ const Agendamentos = () => {
         </CCol>
         <CCol xs={12} md={6}>
           <h4 className="text-center">CIDADÃOS</h4>
-          <h6 className="text-center mb-3">
+          <h6 className="text-center mb-3 text-uppercase">
             Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
             {day.filter((d) => d.presence == 0).length}
           </h6>
           <div className="d-flex justify-content-center flex-row gap-3 mt-3 mb-3">
             {Object.entries(filterServices).map(([key, value]) => {
               return (
-                <small key={key} className='fw-bold fs-6'>
+                <small key={key} className='fw-bold fs-6 text-uppercase'>
                   {key} : {value}
                 </small>
               )
