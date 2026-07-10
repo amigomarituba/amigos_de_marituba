@@ -488,7 +488,7 @@ const Cidadoes = () => {
                 floatingClassName="mb-3"
                 floatingLabel="Titulo"
                 placeholder="titulo"
-                {...register('rg')}
+                {...register('titulo')}
               />
 
               <CFormInput
