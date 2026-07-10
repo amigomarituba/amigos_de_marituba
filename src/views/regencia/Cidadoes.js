@@ -198,15 +198,11 @@ const Cidadoes = () => {
 
   const handleEditer = (cidadao) => {
     cidadao.edite = true
-    console.log(cidadao)
 
     modalVisible.current.visibleModal()
 
     reset(cidadao)
 
-    setTimeout(() => {
-      console.log(getValues())
-    }, 0)
   }
 
   const handleHistorico = async (cidadao) => {

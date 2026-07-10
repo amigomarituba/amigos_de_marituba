@@ -90,8 +90,8 @@ const Lideres = () => {
 
   const handleEditer = (LiderID) => {
     LiderID.edite = true
-    reset(LiderID)
     modalVisible.current.visibleModal()
+    reset(LiderID)
   }
 
   const handleDelete = async (lider) => {
