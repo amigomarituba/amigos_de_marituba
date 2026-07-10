@@ -65,6 +65,7 @@ const CardCidadao = ({ data, editerCidadao, deleteCidadao, historico }) => {
   }
 
   const handleMenuEditer = () => {
+    
     editerCidadao(data)
     handleClose()
   }

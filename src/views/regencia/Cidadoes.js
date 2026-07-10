@@ -46,6 +46,7 @@ const Cidadoes = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
+    getValues,
   } = useForm()
 
   const [spinnnerState, setSpinnerState] = useState(false)
@@ -197,8 +198,15 @@ const Cidadoes = () => {
 
   const handleEditer = (cidadao) => {
     cidadao.edite = true
-    reset(cidadao)
+    console.log(cidadao)
+
     modalVisible.current.visibleModal()
+
+    reset(cidadao)
+
+    setTimeout(() => {
+      console.log(getValues())
+    }, 0)
   }
 
   const handleHistorico = async (cidadao) => {
