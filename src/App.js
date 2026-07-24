@@ -21,9 +21,8 @@ const App = () => {
   // useNetworkMonitor(setToast)
 
   useEffect(() => {
+    localStorage.setItem('coreui-free-react-admin-template-theme', 'dark')
 
-    localStorage.setItem('coreui-free-react-admin-template-theme','dark')
-    
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])
     const theme = urlParams.get('theme') && urlParams.get('theme').match(/^[A-Za-z0-9\s]+/)[0]
     if (theme) {

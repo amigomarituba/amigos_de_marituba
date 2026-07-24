@@ -8,7 +8,6 @@ const Settings = () => {
   return (
     <CContainer fluid>
       
-          <Service />
 
       <CRow className="mt-4">
         <CCol lg={12}>

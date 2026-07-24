@@ -21,7 +21,8 @@ import {
   cilClipboard,
   cilCalendar,
   cilBarChart,
-  cilSettings
+  cilSettings,
+  cilPin,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -29,13 +30,13 @@ const _nav = [
   {
     component: CNavItem,
     name: 'DASHBOARD',
-    type:'private',
+    type: 'private',
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    type:'public',
+    type: 'public',
     name: 'Gerenciamento',
   },
   // {
@@ -48,48 +49,55 @@ const _nav = [
   {
     component: CNavItem,
     name: 'LIDERES',
-    type:'private',
+    type: 'private',
     to: '/lideres/all',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'CIDADÃOS',
-    type:'public',
+    type: 'public',
     to: '/cidadoes/all',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'RELATORIO',
-    type:'private',
+    type: 'private',
     to: '/relatorios',
     icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    type:'public',
+    type: 'public',
     name: 'Serviços',
   },
   {
     component: CNavItem,
     name: 'AGENDAMENTOS',
-    type:'public',
+    type: 'public',
     to: '/servicos/agendamentos',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
   },
   {
     component: CNavTitle,
-    type:'public',
+    type: 'public',
     name: 'Configurações',
   },
   {
     component: CNavItem,
-    name: 'ACESSO E SERVIÇOS',
-    type:'public',
-    to: '/settings',
-    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
-  }
+    name: 'Logins',
+    type: 'public',
+    to: '/settings/usuarios',
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'SERVIÇOS',
+    type: 'public',
+    to: '/settings/servicos',
+    icon: <CIcon icon={cilPin} customClassName="nav-icon" />,
+  },
 ]
 
 export default _nav

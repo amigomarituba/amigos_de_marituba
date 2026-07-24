@@ -7,7 +7,6 @@ import routes from '../routes'
 import { useSelector } from 'react-redux'
 
 const AppContent = () => {
-
   const level = useSelector((state) => state.user.user.level)
 
   return (
@@ -22,22 +21,24 @@ const AppContent = () => {
                   path={route.path}
                   exact={route.exact}
                   name={route.name}
-                  element={<route.element/>}
+                  element={<route.element />}
                 />
               )
             )
           })}
-          
-          
-          <Route path="*" element={
-            level == 'adm' ?
-            <Navigate to="/dashboard" replace /> :
-            <Navigate to="/servicos/agendamentos" replace />
-          } /> 
-          
+
+          <Route
+            path="*"
+            element={
+              level == 'adm' ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/servicos/agendamentos" replace />
+              )
+            }
+          />
         </Routes>
       </Suspense>
-      
     </CContainer>
   )
 }
