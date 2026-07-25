@@ -7,6 +7,10 @@ import {
   CCloseButton,
   CCol,
   CContainer,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
   CFormCheck,
   CFormInput,
   CFormSelect,
@@ -45,6 +49,7 @@ import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
 
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
 
 const Acess = () => {
   const user = useSelector((state) => state.user)
@@ -58,15 +63,32 @@ const Acess = () => {
   const [textVisible, setTextVisible] = useState(false)
   const [textVisibleCreate, setTextVisibleCreate] = useState(false)
 
+  const [check, setCheck] = useState(true)
+
+  const [userPasswordUpdate, setUserPasswordUpdate] = useState({})
+
+  const [alertOpen, setAlertOpen] = useState(false) //alerte de sucesso
+  const [alertDeleteOpen, setAlertDeleteOpen] = useState(false)
+
+  const [confirmeModal, setConfirmeModal] = useState({ visible: false })
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false)
+    setAlertErro(false)
+    setAlertJaCriado(false)
+  }
+
   const handleClose = () => {
     setAnchorEl(false)
   }
 
-  const handleClick = (event) => {
+  const handleClick = (event, user) => {
+    console.log(user)
+
     setAnchorEl(event.currentTarget)
   }
 
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset, setValue } = useForm()
   const [createAcess, setCreateAcess] = useState(false)
   const [lideres, setLideres] = useState([])
   const [acess, setAcess] = useState([])
@@ -74,7 +96,7 @@ const Acess = () => {
 
   const onsubmit = async (data) => {
     try {
-      const { status } = await instanceAxios.post('/login/create', data)
+      const res = await instanceAxios.post('/login/create', data)
       setCreateAcess(!createAcess)
     } catch {
       setOver(true)
@@ -98,21 +120,32 @@ const Acess = () => {
         },
       )
       if (res.status == 200) {
-        console.log(res.data.msg)
-
         setVisibleModal({ visible: false })
+        setAlertOpen(true)
+        setTimeout(() => {
+          setAlertOpen(false)
+        }, 2000)
       }
     }
   }
 
-  const handleRemoveUser = async (id) => {
-    const { status } = await instanceAxios.delete(`/login/${id}`, {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    })
-    if (status == 200) {
-      setCreateAcess(!createAcess)
+  const handleRemoveUser = async (user_obj) => {
+    if (!user_obj.delete) {
+      setConfirmeModal({ visible: true, ...user_obj })
+    } else {
+      const { status } = await instanceAxios.delete(`/login/${user_obj.id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      })
+      if (status == 200) {
+        setCreateAcess(!createAcess)
+        setConfirmeModal({ visible: false })
+        setAlertDeleteOpen(true)
+        setTimeout(() => {
+          setAlertDeleteOpen(false)
+        }, 2000)
+      }
     }
   }
 
@@ -137,6 +170,20 @@ const Acess = () => {
 
   return (
     <CContainer fluid>
+      <AlertRegistre
+        open={alertOpen}
+        handleClose={handleCloseAlert}
+        severity={'success'}
+        message={'Senha Atualizada com Sucesso!'}
+      />
+
+      <AlertRegistre
+        open={alertDeleteOpen}
+        handleClose={handleClose}
+        severity={'success'}
+        message={'Usuario Excluido com sucesso'}
+      />
+
       <CRow className="mt-4">
         <h3 className="mb-3">Gerenciamento de Usuarios </h3>
 
@@ -147,12 +194,11 @@ const Acess = () => {
             </CCardHeader>
             <CCardBody>
               <form onSubmit={handleSubmit(onsubmit)}>
-                <CRow>
-                  <CCol xs={12} md={3}>
+                <CRow className="g-3 align-items-start">
+                  <CCol lg={3} md={6} xs={12}>
                     <CInputGroup>
                       <CInputGroupText>Acesso</CInputGroupText>
                       <CFormSelect
-                        style={{ marginBottom: 3 }}
                         aria-label="Floating label select example"
                         {...register('level', { required: true })}
                       >
@@ -161,8 +207,9 @@ const Acess = () => {
                       </CFormSelect>
                     </CInputGroup>
                   </CCol>
-                  <CCol xs={12} md={5}>
-                    <CInputGroup className="m-md-0 mt-3">
+
+                  <CCol lg={5} md={6} xs={12}>
+                    <CInputGroup className="m-md-0">
                       <CInputGroupText>Lider</CInputGroupText>
                       <CFormSelect
                         style={{ marginBottom: 3 }}
@@ -177,47 +224,46 @@ const Acess = () => {
                     </CInputGroup>
                   </CCol>
 
-                  <CCol xs={12} md={'auto'}>
+                  <CCol lg={'auto'} md={6} xs={12}>
                     <div>
-                      <CInputGroup className="m-md-0 mb-3 mt-3">
+                      <CInputGroup className="m-md-0">
                         <CFormInput
+                          disabled={check}
                           type={textVisibleCreate ? 'text' : 'password'}
                           placeholder="Senha"
-                          {...register('password', { required: true })}
-                          disabled
+                          {...register('password')}
                         />
 
                         <CButton
                           color="primary"
                           onClick={() => setTextVisibleCreate(!textVisibleCreate)}
-                          disabled
                         >
                           {textVisibleCreate ? <VisibilityIcon /> : <VisibilityOffIcon />}
                         </CButton>
                       </CInputGroup>
                       <CFormCheck
-                        
                         id="passwdDefault"
-                        label="Deixar senha padrão(data de nascimento)"
+                        label="Padrão"
                         {...register('defaults', { value: true })}
-                        disabled
+                        onClick={() => {
+                          setCheck(!check)
+                          setValue('password', '')
+                        }}
                       />
                     </div>
                   </CCol>
-                </CRow>
 
-                <CRow className="d-flex justify-content-end h-100 mt-3">
-                  <CCol xs={12} md={2}>
-                    <div className="d-flex h-100">
-                      <CButton
-                        color="primary"
-                        className="w-100 w-md-auto m-md-0 d-flex align-items-center "
-                        type="submit"
-                      >
-                        <CIcon icon={cilPlus} size="xl" className="me-2" />
-                        <strong>Adicionar</strong>
-                      </CButton>
-                    </div>
+                  <CCol lg="auto" md={'auto'} xs={12}>
+                    {/* <div className="d-flex justify-content-center justify-content-md-end"> */}
+                    <CButton
+                      color="primary"
+                      className="m-md-0 d-flex justify-content-center align-items-center "
+                      type="submit"
+                    >
+                      <CIcon icon={cilPlus} size="xl" className="me-2" />
+                      <strong>Adicionar</strong>
+                    </CButton>
+                    {/* </div> */}
                   </CCol>
                 </CRow>
               </form>
@@ -236,7 +282,7 @@ const Acess = () => {
                 <CCol>
                   <CRow>
                     <CCol md={6}>
-                      <CFormInput type="text" label="Lider" placeholder="buscar lider" disabled/>
+                      <CFormInput type="text" label="Lider" placeholder="buscar lider" disabled />
                     </CCol>
 
                     <CCol md={6}>
@@ -244,12 +290,8 @@ const Acess = () => {
                         style={{ marginBottom: 3 }}
                         aria-label="Floating label select example"
                         label="Nivel de Acesso"
-                        disabled
-                        {...register('level', { required: true })}
                       >
-                        <option value={'to'} defaultValue={'todos'}>
-                          Todos
-                        </option>
+                        <option value={'to'}>Todos</option>
 
                         <option value={'adm'}>Administrativo</option>
                         <option value={'usu'}>Usuário</option>
@@ -286,59 +328,55 @@ const Acess = () => {
                           <CButton
                             color="primary"
                             variant="outline"
-                            className="d-flex justify-content-center w-25"
-                            onClick={() => handleUpdatePassword(ac)}
+                            className="d-flex justify-content-center"
+                            onClick={() => {
+                              handleUpdatePassword(ac)
+                            }}
                           >
                             <KeyIcon />
                           </CButton>
-                          {/* <CButton
-                            color="info"
+
+                          <CButton
+                            color="primary"
                             variant="outline"
-                            className="w-25"
                             className="d-flex justify-content-center"
                           >
                             <EditIcon />
-                          </CButton> */}
+                          </CButton>
+
                           <CButton
                             color="danger"
                             variant="outline"
-                            className="d-flex justify-content-center w-25"
-                            onClick={() => handleRemoveUser(ac.id)}
+                            className="d-flex justify-content-center align-items-center"
+                            onClick={() => handleRemoveUser(ac)}
                           >
                             <CIcon icon={cilTrash} size="lg" />
                           </CButton>
                         </div>
 
-                        <Button
-                          id="basic-button"
-                          aria-controls={open ? 'basic-menu' : undefined}
-                          aria-haspopup="true"
-                          aria-expanded={open ? 'true' : undefined}
-                          onClick={handleClick}
-                          className="d-block d-md-none"
-                        >
-                          <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
-                        </Button>
-
-                        <Menu
-                          id="basic-menu"
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleClose}
-                          MenuListProps={{
-                            'aria-labelledby': 'basic-button',
-                          }}
-                        >
-                          <MenuItem onClick={() => handleUpdatePassword(ac)}>
-                            <EditIcon sx={{ marginRight: 1 }} />
-                            Mudar Senha
-                          </MenuItem>
-
-                          <MenuItem onClick={() => handleRemoveUser(ac.id)}>
-                            <DeleteIcon sx={{ marginRight: 1 }} />
-                            Deletar
-                          </MenuItem>
-                        </Menu>
+                        <CDropdown className="d-block d-md-none">
+                          <CDropdownToggle>
+                            <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
+                          </CDropdownToggle>
+                          <CDropdownMenu>
+                            <CDropdownItem
+                              onClick={() => {
+                                handleUpdatePassword(ac)
+                              }}
+                            >
+                              <KeyIcon sx={{ marginRight: 1 }} />
+                              Mudar Senha
+                            </CDropdownItem>
+                            <CDropdownItem>
+                              <EditIcon sx={{ marginRight: 1 }} />
+                              Editar
+                            </CDropdownItem>
+                            <CDropdownItem onClick={() => handleRemoveUser(ac)}>
+                              <DeleteIcon sx={{ marginRight: 1 }} />
+                              Deletar
+                            </CDropdownItem>
+                          </CDropdownMenu>
+                        </CDropdown>
                       </CTableDataCell>
                     </CTableRow>
                   ))}
@@ -405,6 +443,44 @@ const Acess = () => {
             }}
           >
             Salvar
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      <CModal
+        visible={confirmeModal.visible}
+        onClose={() => {
+          setConfirmeModal({ visible: false })
+        }}
+      >
+        <CModalHeader>
+          <CModalTitle>Excluir Usuario</CModalTitle>
+        </CModalHeader>
+
+        <CModalBody>
+          {`Tem certeza que deseja excluir o usuario ${confirmeModal?.leader_name?.toUpperCase()}?`}
+          <br />
+          <strong>Esta ação não poderá ser desfeita.</strong>
+        </CModalBody>
+
+        <CModalFooter>
+          <CButton
+            className="text-white"
+            color="danger"
+            onClick={() => {
+              handleRemoveUser({ visible: false })
+            }}
+          >
+            Cancelar
+          </CButton>
+          <CButton
+            className="text-white"
+            color="success"
+            onClick={() => {
+              handleRemoveUser({ ...confirmeModal, delete: true })
+            }}
+          >
+            Confirmar
           </CButton>
         </CModalFooter>
       </CModal>

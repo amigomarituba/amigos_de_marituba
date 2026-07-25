@@ -231,7 +231,7 @@ const Lideres = () => {
         open={alertErro}
         handleClose={handleClose}
         severity={'error'}
-        message={'Erro no Salvento do Registro'}
+        message={'Erro para Salvar o Registro'}
       />
 
       <ModalDash
