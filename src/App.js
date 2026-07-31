@@ -16,10 +16,6 @@ const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
 
-  // const [toast, setToast] = useState(0)
-
-  // useNetworkMonitor(setToast)
-
   useEffect(() => {
     localStorage.setItem('coreui-free-react-admin-template-theme', 'dark')
 

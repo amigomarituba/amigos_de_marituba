@@ -22,10 +22,11 @@ import { instanceAxios } from '../../config/api'
 import { useForm } from 'react-hook-form'
 import AlertRegistre from '../../components/AlertRegistre/AlertRegistre'
 import DialogModal from '../../components/DialogModal/DialogModal'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Lideres = () => {
   const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
 
   const [spinnnerState, setSpinnerState] = useState(false)
 
@@ -55,8 +56,6 @@ const Lideres = () => {
   //stado de delete
   const [alertDeleteOpen, setAlertDeleteOpen] = useState(false)
   const [alertDeleteError, setAlertDeleteError] = useState(false)
-
-  // const [address, setAddress] = useState({})
 
   const onCloseModal = () => {
     setDialogModalVisible(false)
@@ -131,35 +130,65 @@ const Lideres = () => {
       const { status } = await instanceAxios.post('/leader/update', liderData)
 
       if (status == 200) {
-        setAlertOpen(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Lider',
+            color: 'success',
+            visible: true,
+            message: 'Lider Atualizado com Sucesso !!!',
+          },
+        })
       } else {
-        setAlertErro(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Lider',
+            color: 'error',
+            visible: true,
+            message: 'Error ao Atualizar Lider',
+          },
+        })
       }
 
-      setTimeout(() => {
-        setAlertOpen(false)
-        setAlertErro(false)
-      }, 3000)
     } else {
       const { status } = await instanceAxios.post('/leader/create', liderData)
 
       if (status == 202) {
-        setAlertJaCriado(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Lider',
+            color: 'warning',
+            visible: true,
+            message: 'Lider já Cadastrado !!!',
+          },
+        })
       }
 
       if (status == 200) {
-        setAlertOpen(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Lider',
+            color: 'success',
+            visible: true,
+            message: 'Lider Criador com Sucesso !!!',
+          },
+        })
       }
 
       if (status == 401) {
-        setAlertErro(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Lider',
+            color: 'error',
+            visible: true,
+            message: 'Error ao Criar Lider !!!',
+          },
+        })
       }
-
-      setTimeout(() => {
-        setAlertJaCriado(false)
-        setAlertOpen(false)
-        setAlertErro(false)
-      }, 3000)
     }
     reset()
     modalVisible.current.visibleModal()
@@ -197,41 +226,6 @@ const Lideres = () => {
         title={'Deleta Lider?'}
         onCloseModal={onCloseModal}
         onConfime={onConfirme}
-      />
-
-      <AlertRegistre
-        open={alertJaCriado}
-        handleClose={handleClose}
-        severity={'warning'}
-        message={'Lider já possue um Cadastrado'}
-      />
-
-      <AlertRegistre
-        open={alertDeleteOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Excluido com sucesso'}
-      />
-
-      <AlertRegistre
-        open={alertDeleteError}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro na Exclusão'}
-      />
-
-      <AlertRegistre
-        open={alertOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Registrado com Sucesso!'}
-      />
-
-      <AlertRegistre
-        open={alertErro}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro para Salvar o Registro'}
       />
 
       <ModalDash

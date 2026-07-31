@@ -14,5 +14,5 @@ createRoot(document.getElementById('root')).render(
     <CustomProvider theme="dark" locale={ptBR}>
       <App />
     </CustomProvider>
-  </Provider>,
+  </Provider>
 )

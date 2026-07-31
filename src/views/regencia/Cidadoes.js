@@ -122,37 +122,66 @@ const Cidadoes = () => {
       const { status } = await instanceAxios.post('/citizen/update', cidadaoData)
 
       if (status == 200) {
-        setAlertOpen(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Cidadão',
+            color: 'success',
+            visible: true,
+            message: 'Cidadão Atualizado com Sucesso !!!',
+          },
+        })
       } else {
-        setAlertErro(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Cadastrando Cidadão',
+            color: 'error',
+            visible: true,
+            message: 'Error ao Atualizar Cidadão',
+          },
+        })
       }
-
-      setTimeout(() => {
-        setAlertOpen(false)
-        setAlertOpen(false)
-      }, 3000)
     } else {
       const { status, data } = await instanceAxios.post('/citizen/create', cidadaoData)
 
       if (status == 200) {
-        setAlertOpen(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Cadastrando Cidadão',
+            color: 'success',
+            visible: true,
+            message: 'Cidadão Cadastrado com Sucesso !!!',
+          },
+        })
         setCidadao(data)
       }
 
       if (status == 202) {
-        setAlertJaCriado(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Cadastrando Cidadão',
+            color: 'warning',
+            visible: true,
+            message: 'Cidadão já Cadastrado !!!',
+          },
+        })
         setCidadao(data)
       }
 
       if (status == 401) {
-        setAlertErro(true)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Cidadão',
+            color: 'error',
+            visible: true,
+            message: 'Error ao Criar Cidadão !!!',
+          },
+        })
       }
-
-      setTimeout(() => {
-        setAlertJaCriado(false)
-        setAlertOpen(false)
-        setAlertErro(false)
-      }, 3000)
     }
 
     reset()
@@ -175,22 +204,39 @@ const Cidadoes = () => {
 
       if (status == 200) {
         if (data.type == 'ca') {
-          setAlertAgendamentosFuturos(true)
+          dispatch({
+            type: 'set',
+            alert: {
+              title: 'Deletar Cidadão',
+              color: 'warning',
+              visible: true,
+              message: 'Não é possivel deleta, cidadão ainda possue agendamentos futuros! ',
+            },
+          })
         } else {
-          setAlertDeleteOpen(true)
+          dispatch({
+            type: 'set',
+            alert: {
+              title: 'Deletar Cidadão',
+              color: 'success',
+              visible: true,
+              message: 'Deletado com Sucesso ',
+            },
+          })
           setCidadao([])
         }
       }
     } catch {
-      setAlertDeleteError(true)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Error ao Deletar Cidadão',
+          color: 'error',
+          visible: true,
+          message: 'Erro ao deletar cidadão ',
+        },
+      })
     }
-
-    setTimeout(() => {
-      setAlertDeleteError(false)
-      setAlertDeleteOpen(false)
-      setAlertAgendamentosFuturos(false)
-    }, 3000)
-
     setDialogModalVisible(false)
     setDeleteID('')
     setCreate(!create)
@@ -202,7 +248,6 @@ const Cidadoes = () => {
     modalVisible.current.visibleModal()
 
     reset(cidadao)
-
   }
 
   const handleHistorico = async (cidadao) => {

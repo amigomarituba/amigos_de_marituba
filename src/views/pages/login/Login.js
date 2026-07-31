@@ -22,8 +22,8 @@ import { cilHappy, cilLockLocked, cilLockUnlocked, cilLowVision, cilUser } from 
 import { useForm } from 'react-hook-form'
 import { instanceAxios } from '../../../config/api'
 import { useDispatch } from 'react-redux'
-import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
-
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 const Login = () => {
   const userSession = useDispatch()
 
@@ -34,51 +34,39 @@ const Login = () => {
 
   const { reset, handleSubmit, register } = useForm()
 
-  const handleClose = () => {
-    setIsUser(false)
-  }
-
   const handleSubmitLogin = async (dataSession) => {
     try {
-      const { data } = await instanceAxios.post('/session', dataSession)
-      instanceAxios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+      const res = await instanceAxios.post('/session', dataSession)
 
-      setIsUserConfirme(true)
+      instanceAxios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`
 
-      userSession({ type: 'set', user: data })
-      localStorage.setItem('@user', JSON.stringify(data))
-
-      setTimeout(() => {
-          userSession({ type: 'set', user: data })
-          localStorage.setItem('@user',JSON.stringify(data))
-          handleClose()
-        },1000)
-        
+      if (res.status == 200) {
+        userSession({
+          type: 'set',
+          user: res.data,
+          alert: {
+            visible: true,
+            color: 'success',
+            message: 'Usuario Atenticado com sucesso!! Bem-Vindo',
+          },
+        })
+        localStorage.setItem('@user', JSON.stringify(res.data))
+      }
     } catch {
-      setIsUser(true)
-      setTimeout(() => {
-        handleClose()
-      }, 3000)
+      userSession({
+        type: 'set',
+        alert: {
+          visible: true,
+          color: 'warning',
+          message: 'Usúario não registrado no sistema',
+        },
+      })
     }
     reset({})
   }
 
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex align-items-center justify-content-center">
-      <AlertRegistre
-        open={isUser}
-        handleClose={handleClose}
-        severity={'warning'}
-        message={'Usúario não registrado no sistema'}
-      />
-
-      <AlertRegistre
-        open={isUserConfirme}
-        handleClose={handleClose}
-        severity={'success'}
-        message={`Usúario Atenticado. Bem-Vindo!`}
-      />
-
       <CContainer style={{ width: '60rem' }}>
         <CCardGroup>
           <CCard className="p-2">
@@ -101,14 +89,14 @@ const Login = () => {
                     <CIcon icon={cilLockLocked} />
                   </CInputGroupText>
                   <CFormInput
-                    type={ visionPassword ? "text" : "password"}
+                    type={visionPassword ? 'text' : 'password'}
                     placeholder="Senha"
                     autoComplete="current-password"
                     {...register('password', { required: true })}
                   />
-                  <CButton  color='primary' onClick={()=>setVisionPassword(!visionPassword)}>
-                    <CIcon icon={visionPassword ? cilLockUnlocked : cilLockLocked} size='lg'/>
-                  </CButton >
+                  <CButton color="primary" onClick={() => setVisionPassword(!visionPassword)}>
+                    {visionPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </CButton>
                 </CInputGroup>
                 <CRow>
                   <CCol xs={6}>

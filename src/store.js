@@ -14,7 +14,13 @@ function SessionValidat() {
 const initialState = {
   sidebarShow: true,
   theme: 'dark',
-  user:SessionValidat()
+  user:SessionValidat(),
+  alert:{
+    visible:false,
+    color:'',
+    title:'',
+    message :""
+  }
 }
 
 const changeState = (state = initialState, { type, ...rest }) => {

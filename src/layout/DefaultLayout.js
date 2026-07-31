@@ -1,9 +1,12 @@
 import { Suspense } from 'react'
 import { AppContent, AppSidebar, AppHeader } from '../components/index'
 import { CSpinner } from '@coreui/react'
+import { Alert } from '@mui/material'
+import AlertRegistre from '../components/AlertRegistre/AlertRegistre'
 const DefaultLayout = () => {
   return (
     <div>
+      <AlertRegistre/>
       <AppSidebar />
       <div className="wrapper d-flex flex-column min-vh-100">
         <AppHeader />

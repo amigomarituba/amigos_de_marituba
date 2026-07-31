@@ -24,6 +24,7 @@ import {
   CModalTitle,
   CPopover,
   CRow,
+  CSpinner,
   CTable,
   CTableBody,
   CTableDataCell,
@@ -39,7 +40,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import PersonIcon from '@mui/icons-material/Person'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyIcon from '@mui/icons-material/Key'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CIcon from '@coreui/icons-react'
 import { cilCreditCard, cilOptions, cilPlus, cilSearch, cilTrash, cilUser } from '@coreui/icons'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -49,15 +50,16 @@ import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
 
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import AlertRegistre from '../../../components/AlertRegistre/AlertRegistre'
 
 const Acess = () => {
   const user = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
   const [visibleModal, setVisibleModal] = useState({ visible: false })
-  const [updatePassWord, setUpdatePassWord] = useState({})
+
   const [valuePassWord, SetValuePassWord] = useState(null)
 
   const [textVisible, setTextVisible] = useState(false)
@@ -65,26 +67,15 @@ const Acess = () => {
 
   const [check, setCheck] = useState(true)
 
-  const [userPasswordUpdate, setUserPasswordUpdate] = useState({})
-
-  const [alertOpen, setAlertOpen] = useState(false) //alerte de sucesso
-  const [alertDeleteOpen, setAlertDeleteOpen] = useState(false)
-
   const [confirmeModal, setConfirmeModal] = useState({ visible: false })
 
-  const handleCloseAlert = () => {
-    setAlertOpen(false)
-    setAlertErro(false)
-    setAlertJaCriado(false)
-  }
+  const [load, setLoad] = useState(false)
 
   const handleClose = () => {
     setAnchorEl(false)
   }
 
   const handleClick = (event, user) => {
-    console.log(user)
-
     setAnchorEl(event.currentTarget)
   }
 
@@ -92,17 +83,34 @@ const Acess = () => {
   const [createAcess, setCreateAcess] = useState(false)
   const [lideres, setLideres] = useState([])
   const [acess, setAcess] = useState([])
-  const [over, setOver] = useState(false)
 
   const onsubmit = async (data) => {
     try {
       const res = await instanceAxios.post('/login/create', data)
       setCreateAcess(!createAcess)
+      if (res.status == 200) {
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Usuarios',
+
+            visible: true,
+            color: 'success',
+            message: 'Usuario adicionado com sucesso!!',
+          },
+        })
+      }
     } catch {
-      setOver(true)
-      setTimeout(() => {
-        setOver(false)
-      }, 2000)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Usuarios',
+
+          visible: true,
+          color: 'error',
+          message: 'Erro ao criar usuario',
+        },
+      })
     }
   }
 
@@ -121,10 +129,15 @@ const Acess = () => {
       )
       if (res.status == 200) {
         setVisibleModal({ visible: false })
-        setAlertOpen(true)
-        setTimeout(() => {
-          setAlertOpen(false)
-        }, 2000)
+        dispatch({
+          type: 'set',
+          alert: {
+            visible: true,
+            color: 'success',
+            title: 'Usuarios',
+            message: 'Senha atualizada com sucesso',
+          },
+        })
       }
     }
   }
@@ -133,32 +146,41 @@ const Acess = () => {
     if (!user_obj.delete) {
       setConfirmeModal({ visible: true, ...user_obj })
     } else {
-      const { status } = await instanceAxios.delete(`/login/${user_obj.id}`, {
+      const res = await instanceAxios.delete(`/login/${user_obj.id}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       })
-      if (status == 200) {
-        setCreateAcess(!createAcess)
+
+      setCreateAcess(!createAcess)
+      if (res.status == 200) {
         setConfirmeModal({ visible: false })
-        setAlertDeleteOpen(true)
-        setTimeout(() => {
-          setAlertDeleteOpen(false)
-        }, 2000)
+        dispatch({
+          type: 'set',
+          alert: {
+            title: 'Usuarios',
+
+            visible: true,
+            color: 'success',
+            message: 'Login removido com sucesso',
+          },
+        })
       }
     }
   }
 
   const api = async () => {
-    const { status, data } = await instanceAxios.get('/login')
     const leader = await instanceAxios.get('/leader')
-
-    if (status == 200) {
-      setAcess(data)
-    }
 
     if (leader.status == 200) {
       setLideres(leader.data)
+    }
+
+    setLoad(true)
+    const { status, data } = await instanceAxios.get('/login')
+    if (status == 200) {
+      setAcess(data)
+      setLoad(false)
     }
 
     reset({})
@@ -170,20 +192,6 @@ const Acess = () => {
 
   return (
     <CContainer fluid>
-      <AlertRegistre
-        open={alertOpen}
-        handleClose={handleCloseAlert}
-        severity={'success'}
-        message={'Senha Atualizada com Sucesso!'}
-      />
-
-      <AlertRegistre
-        open={alertDeleteOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Usuario Excluido com sucesso'}
-      />
-
       <CRow className="mt-4">
         <h3 className="mb-3">Gerenciamento de Usuarios </h3>
 
@@ -235,6 +243,7 @@ const Acess = () => {
                         />
 
                         <CButton
+                          disabled={check}
                           color="primary"
                           onClick={() => setTextVisibleCreate(!textVisibleCreate)}
                         >
@@ -311,75 +320,83 @@ const Acess = () => {
                   <CTableHeaderCell className="text-center">Ações</CTableHeaderCell>
                 </CTableHead>
                 <CTableBody>
-                  {acess.map((ac) => (
+                  {load ? (
                     <CTableRow>
-                      <CTableDataCell>{ac.leader_name.toUpperCase()}</CTableDataCell>
-                      <CTableDataCell>{fomartCPF(ac.cpf)}</CTableDataCell>
-
-                      <CTableDataCell>
-                        <CBadge color={ac.level == 'adm' ? 'primary' : 'info'}>
-                          {ac.level == 'adm' ? <AdminPanelSettingsIcon /> : <PersonIcon />}
-                          {ac.level == 'adm' ? 'Administrador' : 'Usuario'}
-                        </CBadge>
+                      <CTableDataCell colSpan={5} className="text-center">
+                        <CSpinner />
                       </CTableDataCell>
-                      <CTableDataCell>Tag</CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-flex justify-content-center gap-2 d-none d-md-flex">
-                          <CButton
-                            color="primary"
-                            variant="outline"
-                            className="d-flex justify-content-center"
-                            onClick={() => {
-                              handleUpdatePassword(ac)
-                            }}
-                          >
-                            <KeyIcon />
-                          </CButton>
+                    </CTableRow>
+                  ) : (
+                    acess.map((ac) => (
+                      <CTableRow>
+                        <CTableDataCell>{ac.leader_name.toUpperCase()}</CTableDataCell>
+                        <CTableDataCell>{fomartCPF(ac.cpf)}</CTableDataCell>
 
-                          <CButton
-                            color="primary"
-                            variant="outline"
-                            className="d-flex justify-content-center"
-                          >
-                            <EditIcon />
-                          </CButton>
-
-                          <CButton
-                            color="danger"
-                            variant="outline"
-                            className="d-flex justify-content-center align-items-center"
-                            onClick={() => handleRemoveUser(ac)}
-                          >
-                            <CIcon icon={cilTrash} size="lg" />
-                          </CButton>
-                        </div>
-
-                        <CDropdown className="d-block d-md-none">
-                          <CDropdownToggle>
-                            <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
-                          </CDropdownToggle>
-                          <CDropdownMenu>
-                            <CDropdownItem
+                        <CTableDataCell>
+                          <CBadge color={ac.level == 'adm' ? 'primary' : 'info'}>
+                            {ac.level == 'adm' ? <AdminPanelSettingsIcon /> : <PersonIcon />}
+                            {ac.level == 'adm' ? 'Administrador' : 'Usuario'}
+                          </CBadge>
+                        </CTableDataCell>
+                        <CTableDataCell>Tag</CTableDataCell>
+                        <CTableDataCell>
+                          <div className="d-flex justify-content-center gap-2 d-none d-md-flex">
+                            <CButton
+                              color="primary"
+                              variant="outline"
+                              className="d-flex justify-content-center"
                               onClick={() => {
                                 handleUpdatePassword(ac)
                               }}
                             >
-                              <KeyIcon sx={{ marginRight: 1 }} />
-                              Mudar Senha
-                            </CDropdownItem>
-                            <CDropdownItem>
-                              <EditIcon sx={{ marginRight: 1 }} />
-                              Editar
-                            </CDropdownItem>
-                            <CDropdownItem onClick={() => handleRemoveUser(ac)}>
-                              <DeleteIcon sx={{ marginRight: 1 }} />
-                              Deletar
-                            </CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
+                              <KeyIcon />
+                            </CButton>
+
+                            <CButton
+                              color="primary"
+                              variant="outline"
+                              className="d-flex justify-content-center"
+                            >
+                              <EditIcon />
+                            </CButton>
+
+                            <CButton
+                              color="danger"
+                              variant="outline"
+                              className="d-flex justify-content-center align-items-center"
+                              onClick={() => handleRemoveUser(ac)}
+                            >
+                              <CIcon icon={cilTrash} size="lg" />
+                            </CButton>
+                          </div>
+
+                          <CDropdown className="d-block d-md-none">
+                            <CDropdownToggle>
+                              <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
+                            </CDropdownToggle>
+                            <CDropdownMenu>
+                              <CDropdownItem
+                                onClick={() => {
+                                  handleUpdatePassword(ac)
+                                }}
+                              >
+                                <KeyIcon sx={{ marginRight: 1 }} />
+                                Mudar Senha
+                              </CDropdownItem>
+                              <CDropdownItem>
+                                <EditIcon sx={{ marginRight: 1 }} />
+                                Editar
+                              </CDropdownItem>
+                              <CDropdownItem onClick={() => handleRemoveUser(ac)}>
+                                <DeleteIcon sx={{ marginRight: 1 }} />
+                                Deletar
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))
+                  )}
                 </CTableBody>
               </CTable>
             </CCardBody>

@@ -11,12 +11,13 @@ import {
   CInputGroup,
   CPopover,
   CRow,
+  CSpinner,
 } from '@coreui/react'
 import { Box } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { instanceAxios } from '../../../config/api'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Col } from 'rsuite'
 import CardBody from 'rsuite/esm/Card/CardBody'
 import CIcon from '@coreui/icons-react'
@@ -25,27 +26,54 @@ import { cilAddressBook, cilPin, cilPlus } from '@coreui/icons'
 const Service = () => {
   const user = useSelector((state) => state.user)
 
+  const dispatch = useDispatch()
+
   const { register, handleSubmit } = useForm()
   const [createService, setCreateService] = useState(false)
   const [services, setServices] = useState([])
 
+  const [load, setLoad] = useState(false)
+
   const onsubmit = async (data) => {
     const { status } = await instanceAxios.post('/service/create', data)
-    setCreateService(!createService)
+
+    if (status == 200) {
+      setCreateService(!createService)
+      dispatch({
+        type: 'set',
+        alert: {
+          visible: true,
+          title: 'Servicos',
+          color: 'success',
+          message: 'Servico criado com sucesso!!',
+        },
+      })
+    }
   }
 
   const handleRemoveService = async (id) => {
     const { status } = await instanceAxios.delete(`/service/${id}`)
     if (status == 200) {
       setCreateService(!createService)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Servicos',
+          visible: true,
+          color: 'success',
+          message: 'Servico deletado com sucesso!!',
+        },
+      })
     }
   }
 
   const api = async () => {
+    setLoad(true)
     const { status, data } = await instanceAxios.get('/service')
 
     if (status == 200) {
       setServices(data)
+      setLoad(false)
     }
   }
 
@@ -107,31 +135,36 @@ const Service = () => {
             </CCardHeader>
             <CCardBody>
               <CRow xs={{ cols: 2 }} md={{ cols: 4 }}>
-                {services.map((service) => (
-                  <Col key={service.id} className="mt-2">
-                    <CCard className="h-100 p-3">
-                      <CardBody>
-                        <div className="d-flex justify-content-between align-item-center">
-                          <CIcon icon={cilPin} size="xl" />
-                        
-                            <CCloseButton onClick={() => handleRemoveService(service.id)} />
-                          
-                        </div>
-                        <h6 className="mt-3">{service.service}</h6>
+                {load ? (
+                  <div className="d-flex w-100 justify-content-center">
+                    <CSpinner />
+                  </div>
+                ) : (
+                  services.map((service) => (
+                    <Col key={service.id} className="mt-2">
+                      <CCard className="h-100 p-3">
+                        <CardBody>
+                          <div className="d-flex justify-content-between align-item-center">
+                            <CIcon icon={cilPin} size="xl" />
 
-                        <div
-                          style={{
-                            width: '25%',
-                            height: '20%',
-                            backgroundColor: service.color,
-                            borderRadius: 10,
-                            marginBottom: 18,
-                          }}
-                        ></div>
-                      </CardBody>
-                    </CCard>
-                  </Col>
-                ))}
+                            <CCloseButton onClick={() => handleRemoveService(service.id)} />
+                          </div>
+                          <h6 className="mt-3">{service.service}</h6>
+
+                          <div
+                            style={{
+                              width: '25%',
+                              height: '20%',
+                              backgroundColor: service.color,
+                              borderRadius: 10,
+                              marginBottom: 18,
+                            }}
+                          ></div>
+                        </CardBody>
+                      </CCard>
+                    </Col>
+                  ))
+                )}
               </CRow>
             </CCardBody>
           </CCard>
