@@ -8,17 +8,14 @@ const Cidadoes = React.lazy(() => import('./views/regencia/Cidadoes'))
 const Relatorios = React.lazy(() => import('./views/servicos/Relatorios/Relatorios'))
 const Agendamentos = React.lazy(() => import('./views/servicos/consultas/Agendamentos'))
 
-const Settings = React.lazy(() => import('./views/settings/Settings'))
-
 const routes = [
   { path: '/dashboard', name: 'Home', element: Dashboard },
   { path: '/relatorios', name: 'Relatorios', element: Relatorios },
   { path: '/lideres/:fill', name: 'Lideres', element: Lideres },
   { path: '/cidadoes/:fill', name: 'Cidadões', element: Cidadoes },
-  { path: '/servicos/agendamentos', name: 'Agendamentos', element: Agendamentos,  },
+  { path: '/servicos/agendamentos', name: 'Agendamentos', element: Agendamentos },
   { path: '/settings/servicos', name: 'Servicos', element: Service },
   { path: '/settings/usuarios', name: 'Usuarios', element: Acess },
-
 ]
 
 export default routes
