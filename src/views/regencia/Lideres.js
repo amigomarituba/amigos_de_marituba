@@ -317,6 +317,7 @@ const Lideres = () => {
 
                 <CCol md={3} sx={'auto'}>
                   <CFormSelect
+                    disabled
                     label="tag"
                     onChange={(e) => setFilterValue({ type: 'select', input: e.target.value })}
                     value={filterValue.input}
