@@ -10,26 +10,31 @@ const AlertRegistre = ({ open, handleClose, severity, message }) => {
     <Snackbar
       open={alert.visible}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      onClose={()=>{
+      onClose={() => {
         dispatch({
-          type:"set",
-          alert:{
+          type: 'set',
+          alert: {
             ...alert,
-            visible:false
-          }
+            visible: false,
+          },
         })
       }}
       autoHideDuration={3000}
     >
-      <Alert onClose={()=>{
-        dispatch({
-          type:"set",
-          alert:{
-            ...alert,
-            visible:false
-          }
-        })
-      }} severity={alert.color} variant="filled" sx={{ width: '100%' }}>
+      <Alert
+        onClose={() => {
+          dispatch({
+            type: 'set',
+            alert: {
+              ...alert,
+              visible: false,
+            },
+          })
+        }}
+        severity={alert.color}
+        variant="filled"
+        sx={{ width: '100%' }}
+      >
         <AlertTitle>{alert?.title}</AlertTitle>
         {alert.message}
       </Alert>

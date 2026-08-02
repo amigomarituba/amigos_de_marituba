@@ -113,7 +113,6 @@ const Agendamentos = () => {
       }, {})
 
       setFilterServices(filter_count_service)
-      console.log(filter_count_service)
 
       return data
     } catch {

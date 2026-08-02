@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
@@ -9,7 +9,6 @@ import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 import { useSelector } from 'react-redux'
 
 export const AppSidebarNav = ({ items }) => {
-
   const level = useSelector((state) => state.user.user.level)
 
   const navLink = (name, icon, badge, indent = false) => {
@@ -36,23 +35,21 @@ export const AppSidebarNav = ({ items }) => {
     const { component, name, badge, icon, ...rest } = item
     const Component = component
 
-   
-      return (
-        <Component as="div" key={index}>
-          {rest.to || rest.href ? (
-            <CNavLink
-              {...(rest.to && { as: NavLink })}
-              {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
-              {...rest}
-            >
-              {navLink(name, icon, badge, indent)}
-            </CNavLink>
-          ) : (
-            navLink(name, icon, badge, indent)
-          )}
-        </Component>
-      )
-    
+    return (
+      <Component as="div" key={index}>
+        {rest.to || rest.href ? (
+          <CNavLink
+            {...(rest.to && { as: NavLink })}
+            {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
+            {...rest}
+          >
+            {navLink(name, icon, badge, indent)}
+          </CNavLink>
+        ) : (
+          navLink(name, icon, badge, indent)
+        )}
+      </Component>
+    )
   }
 
   const navGroup = (item, index) => {
@@ -67,22 +64,17 @@ export const AppSidebarNav = ({ items }) => {
     )
   }
   return (
-    <CSidebarNav as={SimpleBar} >
-      
+    <CSidebarNav as={SimpleBar}>
       {items &&
         items.map((item, index) => {
-
-          if (item.type == 'public'){
+          if (item.type == 'public') {
             return navItem(item, index)
-          }else {
-            if (level == 'adm'){
+          } else {
+            if (level == 'adm') {
               return navItem(item, index)
             }
           }
-
-        }
-        )
-      }
+        })}
     </CSidebarNav>
   )
 }

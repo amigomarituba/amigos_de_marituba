@@ -498,6 +498,7 @@ const Cidadoes = () => {
         handleButtonSalveModal={handleButtonSalveModal}
         ref={modalVisible}
         isSpinner={isSubmitting}
+        lider={true}
       >
         <ListView>
           <CContainer className="p-0">

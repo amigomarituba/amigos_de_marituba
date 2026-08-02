@@ -34,7 +34,6 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom">
 
-      
         <CSidebarBrand to="/">
           <CImage fluid src={'/api/logo.png'} width={60} height={60}/>
           {/* <CIcon customClassName="sidebar-brand-full" height={32} />

@@ -8,7 +8,6 @@ import './scss/style.scss'
 import './scss/examples.scss'
 import { AppRoute } from './routes/app.routes'
 import { AuthRoute } from './routes/auth.routes'
-import { useNetworkMonitor } from './hook/useNetwork'
 
 const App = () => {
   const user = useSelector((state) => state.user)

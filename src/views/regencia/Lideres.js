@@ -1,30 +1,64 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { cilClipboard } from '@coreui/icons'
+import { cilClipboard, cilOptions } from '@coreui/icons'
 import ModalDash from '../../components/Modal/ModalDash'
 import HeaderSeach from '../../components/header/HeaderSeach'
 import ListView from '../../components/ListView/ListView'
 import { useParams } from 'react-router-dom'
 import {
+  CBadge,
+  CButton,
   CButtonGroup,
+  CCard,
+  CCardHeader,
   CCol,
   CContainer,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
   CForm,
   CFormCheck,
   CFormInput,
   CFormLabel,
+  CFormSelect,
   CInputGroup,
   CRow,
   CSpinner,
+  CTab,
+  CTable,
+  CTableBody,
+  CTableDataCell,
+  CTableHead,
+  CTableHeaderCell,
+  CTableRow,
+  CTooltip,
 } from '@coreui/react'
 import CardLider from './Cards/CardLider'
-import { Box } from '@mui/material'
+import { Box, Drawer } from '@mui/material'
 import { instanceAxios } from '../../config/api'
 import { useForm } from 'react-hook-form'
 import AlertRegistre from '../../components/AlertRegistre/AlertRegistre'
 import DialogModal from '../../components/DialogModal/DialogModal'
 import { useDispatch, useSelector } from 'react-redux'
+import CardBody from 'rsuite/esm/Card/CardBody'
+import AddIcon from '@mui/icons-material/Add'
+import BadgeIcon from '@mui/icons-material/Badge'
+import { Col } from 'rsuite'
+import { fomartCPF } from './Cards/Utils/FormatInput'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
+
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import CIcon from '@coreui/icons-react'
+import { formatDate } from '../../utils/Utils'
+import { ModalData, useModal } from '../../components/Modal/ModalData'
 
 const Lideres = () => {
+  const [visible, open, close] = useModal()
+
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
@@ -56,6 +90,12 @@ const Lideres = () => {
   //stado de delete
   const [alertDeleteOpen, setAlertDeleteOpen] = useState(false)
   const [alertDeleteError, setAlertDeleteError] = useState(false)
+
+  const [filterValue, setFilterValue] = useState({ type: '', input: '' })
+
+  const [openDrawer, setOpenDrawer] = useState(false)
+
+  const [dataModal, setDataModal] = useState({})
 
   const onCloseModal = () => {
     setDialogModalVisible(false)
@@ -99,20 +139,16 @@ const Lideres = () => {
     setInfoLider(`${lider.name} de codigo ${lider.uid}`)
   }
 
-  const OnChangeArea = async (e) => {
-    // if (e.target.name == 'iszone') {
-    //   let codigo_area_enabled = document.getElementsByName('zone_uid')
-    //   codigo_area_enabled[0].disabled = e.target.value === 'true' ? false : true
-    // }
-  }
+  const liderFiltrados = lideres.filter((item) => {
+    const texto = filterValue.input.toLowerCase()
 
-  const fillterCallback = async (filter) => {
-    const { data } = await instanceAxios.get('/leader/show/all', {
-      params: filter,
-    })
-
-    setLideres(data)
-  }
+    return (
+      item.name.toLowerCase().includes(texto) ||
+      item.cpf.toLowerCase().includes(texto) ||
+      item.uid.toLowerCase().includes(texto) ||
+      item?.tag?.toLowerCase().includes(texto)
+    )
+  })
 
   const handleClose = () => {
     setAlertOpen(false)
@@ -150,7 +186,6 @@ const Lideres = () => {
           },
         })
       }
-
     } else {
       const { status } = await instanceAxios.post('/leader/create', liderData)
 
@@ -194,6 +229,7 @@ const Lideres = () => {
     modalVisible.current.visibleModal()
     setCreate(!create)
   }
+
   const handleButtonSalveModal = () => {
     document.getElementById('submitbtn').click()
   }
@@ -219,7 +255,188 @@ const Lideres = () => {
   }
 
   return (
-    <>
+    <CContainer fluid>
+      <CRow>
+        <CCol>
+          <CCard className="w-100 p-3">
+            <CardBody>
+              <CRow>
+                <CCol>
+                  <div>
+                    <h4>Lideres</h4>
+                    <span>Gerenciamento de Lideres do Projeto</span>
+                  </div>
+                </CCol>
+
+                <CCol className="d-flex align-items-center justify-content-end ">
+                  <CButton
+                    color="primary"
+                    className="d-flex"
+                    onClick={() => {
+                      modalVisible.current.visibleModal()
+                    }}
+                  >
+                    <AddIcon />
+                    <span className="d-md-block d-none">Criar Novo Lider</span>
+                  </CButton>
+                </CCol>
+              </CRow>
+
+              <CRow className="mt-2">
+                <CCol className="text-uppercase">
+                  <CBadge
+                    color="primary"
+                    className="me-3"
+                    style={{
+                      fontSize: 14,
+                    }}
+                  >
+                    Total de Lideres
+                  </CBadge>
+                  <strong>{lideres.length} registros</strong>
+                </CCol>
+              </CRow>
+            </CardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CRow className="mt-3">
+        <CCol>
+          <CCard>
+            <CCardHeader>
+              <CRow>
+                <CCol md={4} sx={'auto'}>
+                  <CFormInput
+                    type="text"
+                    onChange={(e) => setFilterValue({ type: 'text', input: e.target.value })}
+                    label="Lider"
+                    placeholder="Buscar por Nome/Codigo/CPF"
+                    value={filterValue.type == 'text' ? filterValue.input : ''}
+                  />
+                </CCol>
+
+                <CCol md={3} sx={'auto'}>
+                  <CFormSelect
+                    label="tag"
+                    onChange={(e) => setFilterValue({ type: 'select', input: e.target.value })}
+                    value={filterValue.input}
+                  >
+                    <option value={''}>Todos</option>
+                    <option value={'04319456246'}>04319456246</option>
+                    <option value={'usu'}>Tag3</option>
+                  </CFormSelect>
+                </CCol>
+
+                <CCol md={3} sx={'auto'} className="d-flex align-items-center mt-4">
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    onClick={() => setFilterValue({ type: '', input: '' })}
+                  >
+                    Limpar Filtro
+                  </CButton>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+
+            <CardBody className="p-2">
+              <CTable responsive>
+                <CTableHead className="text-uppercase">
+                  <CTableHeaderCell>Lider</CTableHeaderCell>
+
+                  <CTableHeaderCell>CPF</CTableHeaderCell>
+
+                  <CTableHeaderCell className="d-md-block d-none">Codigo</CTableHeaderCell>
+
+                  <CTableHeaderCell>Tag</CTableHeaderCell>
+                  <CTableHeaderCell className="d-md-block d-none">Contato</CTableHeaderCell>
+
+                  <CTableHeaderCell className="text-center">Ações</CTableHeaderCell>
+                </CTableHead>
+                <CTableBody>
+                  {spinnnerState ? (
+                    <CTableRow>
+                      <CTableDataCell colSpan={5} className="text-center">
+                        <CSpinner />
+                      </CTableDataCell>
+                    </CTableRow>
+                  ) : (
+                    liderFiltrados.map((lider) => (
+                      <CTableRow className="text-uppercase">
+                        <CTableDataCell>
+                          <div className="d-flex align-items-center gap-2">
+                            <AccountCircleIcon
+                              style={{
+                                fontSize: 35,
+                              }}
+                            />
+
+                            <span>{lider.name}</span>
+                          </div>
+                        </CTableDataCell>
+                        <CTableDataCell>{fomartCPF(lider.cpf)}</CTableDataCell>
+                        <CTableDataCell className="d-md-block d-none">{lider.uid}</CTableDataCell>
+                        <CTableDataCell>TAG</CTableDataCell>
+                        <CTableDataCell className="d-md-block d-none" style={{ fontSize: 19.5 }}>
+                          <CBadge
+                            color={lider.leaders_contact.mode == 'lw' ? 'success' : 'primary'}
+                            as={lider.leaders_contact.mode == 'lw' ? 'a' : 'span'}
+                            href={`https://wa.me/55${lider.leaders_contact.ddd}${lider.leaders_contact.phone}`}
+                            target="_blank"
+                          >
+                            {lider.leaders_contact.mode == 'lw' ? (
+                              <WhatsAppIcon className="me-1" />
+                            ) : (
+                              <LocalPhoneIcon className="me-1" />
+                            )}
+                            ({lider.leaders_contact.ddd}){lider.leaders_contact.phone}
+                          </CBadge>
+                        </CTableDataCell>
+                        <CTableDataCell className="">
+                          <CDropdown className="d-block">
+                            <CDropdownToggle>
+                              <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
+                            </CDropdownToggle>
+                            <CDropdownMenu>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => {
+                                  open()
+                                  setDataModal(lider)
+                                }}
+                              >
+                                <RemoveRedEyeIcon />
+                                Infomações
+                              </CDropdownItem>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => handleEditer(lider)}
+                              >
+                                <EditIcon className="me-2" />
+                                Editar
+                              </CDropdownItem>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() =>
+                                  handleDelete({ id: lider.id, name: lider.name, uid: lider.uid })
+                                }
+                              >
+                                <DeleteIcon className="me-2" />
+                                Deletar
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))
+                  )}
+                </CTableBody>
+              </CTable>
+            </CardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
       <DialogModal
         visible={dialogModalVisible}
         messagem={`Você deseja apagar o lider ${infoLider} ?`}
@@ -228,6 +445,8 @@ const Lideres = () => {
         onConfime={onConfirme}
       />
 
+      <ModalData visible={visible} close={close} data={dataModal} />
+
       <ModalDash
         title={`Registra/Atualizar Líder`}
         icon={cilClipboard}
@@ -235,6 +454,7 @@ const Lideres = () => {
         handleButtonSalveModal={handleButtonSalveModal}
         ref={modalVisible}
         isSpinner={isSubmitting}
+        lider={false}
       >
         <ListView>
           <CContainer className="p-0">
@@ -285,19 +505,6 @@ const Lideres = () => {
               />
 
               <h5>Contato</h5>
-
-              {/* <CFormInput
-                  type="text"
-                  id="nameArea"
-                  floatingClassName="mb-3"
-                  floatingLabel="Telefone"
-                  placeholder="919xxxxxxxx"
-                  maxLength={15}
-                  value={phoneOne}
-                  onChangeCapture={(e) => { handleFomartPhone(e, handleSetPhoneOne) }}
-                  {...register('leaders_contact_one.phone')}
-                />
-                <input type='text' value={'ligacao'} hidden {...register('leaders_contact_one.mode', { required: true })} /> */}
 
               <CRow className="g-2 mb-3">
                 <CCol xs={4} md={2}>
@@ -442,49 +649,7 @@ const Lideres = () => {
           </CContainer>
         </ListView>
       </ModalDash>
-
-      <HeaderSeach
-        placeholder={'Nome / CPF / Codigo do Lider'}
-        fillterCallback={fillterCallback}
-        OnChangeArea={OnChangeArea}
-        nameFiltro={''}
-        select={
-          [
-            // {
-            //   name:'iszone',
-            //   labels: [
-            //     { label: 'Com Area', uid: 'true' },
-            //     { label: 'Sem Area', uid: 'false' }
-            //   ]
-            // },
-            // {
-            //   name:'zone_uid',
-            //   nameLabel:'Todas as Áreas',
-            //   labels: areas
-            // }
-          ]
-        }
-      />
-
-      <ListView>
-        {spinnnerState ? (
-          <div className="d-flex justify-content-center mt-5">
-            <CSpinner />
-          </div>
-        ) : (
-          lideres.map((data, index) => {
-            return (
-              <CardLider
-                key={index}
-                data={data}
-                editerLider={handleEditer}
-                deleteLider={handleDelete}
-              />
-            )
-          })
-        )}
-      </ListView>
-    </>
+    </CContainer>
   )
 }
 

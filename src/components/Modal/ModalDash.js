@@ -13,7 +13,7 @@ import AddIcon from '@mui/icons-material/Add'
 import React, { forwardRef, useImperativeHandle, useState } from 'react'
 
 const ModalDash = forwardRef(
-  ({ title, icon, children, handleButtonSalveModal, CloseAdd, isSpinner }, ref) => {
+  ({ title, icon, children, handleButtonSalveModal, CloseAdd, isSpinner, lider }, ref) => {
     const [visible, setVisible] = useState(false)
 
     useImperativeHandle(ref, () => ({
@@ -49,25 +49,27 @@ const ModalDash = forwardRef(
               Cancelar
             </CButton>
             <CButton color="primary" onClick={handleButtonSalveModal} disabled={isSpinner}>
-              {isSpinner ? <CSpinner size='sm' className='me-2'/> :'' } Salvar
+              {isSpinner ? <CSpinner size="sm" className="me-2" /> : ''} Salvar
             </CButton>
           </CModalFooter>
         </CModal>
 
-        <Fab
-          sx={{
-            position: 'fixed',
-            bottom: 30,
-            right: 30,
-            bgcolor: '#fd2',
-            '&:hover': { bgcolor: '#f12' },
-          }}
-          aria-label={'Add'}
-          color="#25f"
-          onClick={handleModalVisible}
-        >
-          <AddIcon color="#f2f" />
-        </Fab>
+        {lider && (
+          <Fab
+            sx={{
+              position: 'fixed',
+              bottom: 30,
+              right: 30,
+              bgcolor: '#fd2',
+              '&:hover': { bgcolor: '#f12' },
+            }}
+            aria-label={'Add'}
+            color="#25f"
+            onClick={handleModalVisible}
+          >
+            <AddIcon color="#f2f" />
+          </Fab>
+        )}
       </>
     )
   },
