@@ -159,6 +159,8 @@ const Lideres = () => {
   const onSubmit = async (liderData) => {
     liderData.registry_id = user.user.id
 
+    liderData.name = liderData.name.trim()
+
     if (liderData.edite) {
       delete liderData.edite
       delete liderData.zone

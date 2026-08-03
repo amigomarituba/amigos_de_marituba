@@ -118,6 +118,8 @@ const Cidadoes = () => {
   }
 
   const onSubmit = async (cidadaoData) => {
+    cidadaoData.name = cidadaoData.name.trim()
+
     let status = 0
     if (cidadaoData.edite) {
       delete cidadaoData.edite
