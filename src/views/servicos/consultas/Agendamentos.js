@@ -375,6 +375,7 @@ const Agendamentos = () => {
         CloseAdd={CloseAdd}
         ref={modalVisible}
         isSpinner={isSubmitting}
+        lider={true}
       >
         <ListView>
           <CCol>

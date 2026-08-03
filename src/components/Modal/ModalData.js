@@ -138,7 +138,7 @@ export function ModalData({ visible, close, data }) {
           </CCol>
 
           <CCol>
-            <CButton color="danger" className="w-100 text-white">
+            <CButton color="danger" className="w-100 text-white" onClose={close}>
               Fechar
             </CButton>
           </CCol>
