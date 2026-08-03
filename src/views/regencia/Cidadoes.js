@@ -36,10 +36,12 @@ import { instanceAxios } from '../../config/api'
 import AlertRegistre from '../../components/AlertRegistre/AlertRegistre'
 import DialogModal from '../../components/DialogModal/DialogModal'
 import { formatDate } from '../../utils/Utils'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Cidadoes = () => {
   const user = useSelector((state) => state.user)
+
+  const dispatch = useDispatch()
 
   const {
     register,
