@@ -1,5 +1,9 @@
 import {
   CButton,
+  CCard,
+  CCardBody,
+  CCardFooter,
+  CCardHeader,
   CCol,
   CContainer,
   CFormInput,
@@ -9,7 +13,7 @@ import {
   CRow,
   CSpinner,
 } from '@coreui/react'
-import { Box } from '@mui/material'
+import { Box, CardHeader } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { Calendar, Col } from 'rsuite'
 import 'rsuite/Calendar/styles/index.css'
@@ -25,6 +29,10 @@ import { formatDate, formatDateN } from '../../../utils/Utils'
 import { fomartCPF } from '../../regencia/Cards/Utils/FormatInput'
 import SelectChange from '../../../components/SelectChange'
 import { object } from 'prop-types'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import AddIcon from '@mui/icons-material/Add'
+import CardBody from 'rsuite/esm/Card/CardBody'
+import CardFooter from 'rsuite/esm/Card/CardFooter'
 
 const Agendamentos = () => {
   const {
@@ -289,7 +297,7 @@ const Agendamentos = () => {
 
   return (
     <CContainer fluid>
-      <DialogModal
+      {/* <DialogModal
         visible={dialogModalVisible}
         messagem={`Você deseja apagar o agendamento ${info} ?`}
         title={'Deleta Agendamento?'}
@@ -330,41 +338,165 @@ const Agendamentos = () => {
         handleClose={handleClose}
         severity={'warning'}
         message={'Não é Possivel agendar em datas passadas'}
-      />
+      /> */}
 
-      <CRow className="g-7">
-        <CCol xs={12} md={6}>
+      <CRow>
+        <CCol xs={12} md={7}>
+          <CCard>
+            <CCardBody>
+              <CRow>
+                <CCol>
+                  <div>
+                    <h4>
+                      <CalendarMonthIcon className="me-2" style={{ fontSize: 30 }} />
+                      Agendamentos
+                    </h4>
+                    <span>Agendamento de Serviços</span>
+                  </div>
+                </CCol>
+                <CCol className="d-flex align-items-center justify-content-end ">
+                  <CButton
+                    color="primary"
+                    className="d-flex"
+                    onClick={() => {
+                      modalVisible.current.visibleModal()
+                    }}
+                  >
+                    <AddIcon />
+                    <span className="d-md-block d-none">Novo Agendamento</span>
+                  </CButton>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
+
           <Calendar
             isoWeek={false}
             compact
             bordered
-            className="w-100 mb-3"
             onSelect={handleSelectDay}
             renderCell={renderCellDay}
           />
+
+          <CCard>
+            <CCardBody>
+              <CRow>
+                <CCol className="d-flex align-items-center justify-content-center gap-2">
+                  <div
+                    style={{
+                      width: 13,
+                      height: 13,
+                      backgroundColor: '#6C82D3',
+                      borderRadius: 13,
+                    }}
+                  ></div>
+
+                  <strong>c/agendamentos</strong>
+                </CCol>
+                <CCol className="d-flex align-items-center justify-content-center gap-2">
+                  <div
+                    style={{
+                      width: 13,
+                      height: 13,
+                      backgroundColor: '#169DE0',
+                      borderRadius: 13,
+                    }}
+                  ></div>
+
+                  <strong>Hoje</strong>
+                </CCol>
+                <CCol className="d-flex align-items-center justify-content-center gap-2">
+                  <div
+                    style={{
+                      width: 13,
+                      height: 13,
+                      backgroundColor: '#353e5f',
+                      borderRadius: 13,
+                    }}
+                  ></div>
+
+                  <strong>Fora do Mês</strong>
+                </CCol>
+              </CRow>
+            </CCardBody>
+          </CCard>
         </CCol>
-        <CCol xs={12} md={6}>
-          <h4 className="text-center">CIDADÃOS</h4>
-          <h6 className="text-center mb-3 text-uppercase">
-            Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
-            {day.filter((d) => d.presence == 0).length}
-          </h6>
-          <div className="d-flex justify-content-center flex-row gap-3 mt-3 mb-3">
-            {Object.entries(filterServices).map(([key, value]) => {
-              return (
-                <small key={key} className='fw-bold fs-6 text-uppercase'>
-                  {key} : {value}
-                </small>
-              )
-            })}
-          </div>
-          {spinnnerState ? (
-            <div className="d-flex justify-content-center mt-5">
-              <CSpinner />
-            </div>
-          ) : (
-            <ListCardAgenda data={day} />
-          )}
+
+        <CCol xs={12} md={5}>
+          <CRow>
+            <CCol>
+              <CCard>
+                <CCardBody>
+                  <CRow>
+                    <CCol>
+                      <div>
+                        <h4>
+                          <CalendarMonthIcon className="me-2" style={{ fontSize: 30 }} />
+                          Agendamentos dos Dia
+                        </h4>
+                        <span>{formatDate(dayNow)}</span>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+            </CCol>
+          </CRow>
+
+          <CRow className="mt-2">
+            <CCol>
+              <CCard>
+                <CCardBody>
+                  <CRow>
+                    <CCol className="d-flex align-items-center  justify-content-center ">
+                      <CCard>
+                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-3 p-1">
+                          <div>
+                            <CalendarMonthIcon style={{ fontSize: 35 }} />
+                          </div>
+                          <div className="d-flex align-items-center  justify-content-center flex-column ">
+                            <h6>{day.filter((d) => d.presence == 0).length}</h6>
+                            <strong>Ausentes</strong>
+                          </div>
+                        </CardBody>
+                      </CCard>
+                    </CCol>
+
+                    <CCol className="d-flex align-items-center  justify-content-center ">
+                      <CCard>
+                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-3 p-1">
+                          <div>
+                            <CalendarMonthIcon style={{ fontSize: 35 }} />
+                          </div>
+                          <div className="d-flex align-items-center  justify-content-center flex-column ">
+                            <h6>{day.filter((d) => d.presence == 0).length}</h6>
+                            <strong>Ausentes</strong>
+                          </div>
+                        </CardBody>
+                      </CCard>
+                    </CCol>
+
+                    <CCol className="d-flex align-items-center  justify-content-center ">
+                      <CCard className="p-2">
+                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-2 p-1">
+                          <div className="d-flex align-items-center  justify-content-center flex-column ">
+                            <h5 className='d-flex align-items-center gap-3'>
+                              <CalendarMonthIcon style={{ fontSize: 25 }} />
+                        
+                              {day.filter((d) => d.presence == 0).length}
+                            </h5>
+                          </div>
+                        </CardBody>
+                        <CardFooter>
+                          <strong>Ausentes</strong>
+                        </CardFooter>
+                      </CCard>
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+            </CCol>
+          </CRow>
         </CCol>
       </CRow>
 
@@ -375,7 +507,6 @@ const Agendamentos = () => {
         CloseAdd={CloseAdd}
         ref={modalVisible}
         isSpinner={isSubmitting}
-        lider={true}
       >
         <ListView>
           <CCol>
@@ -441,3 +572,26 @@ const Agendamentos = () => {
 }
 
 export default Agendamentos
+{
+  /* <h4 className="text-center">CIDADÃOS</h4>
+          <h6 className="text-center mb-3 text-uppercase">
+            Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
+            {day.filter((d) => d.presence == 0).length}
+          </h6>
+          <div className="d-flex justify-content-center flex-row gap-3 mt-3 mb-3">
+            {Object.entries(filterServices).map(([key, value]) => {
+              return (
+                <small key={key} className="fw-bold fs-6 text-uppercase">
+                  {key} : {value}
+                </small>
+              )
+            })}
+          </div>
+          {spinnnerState ? (
+            <div className="d-flex justify-content-center mt-5">
+              <CSpinner />
+            </div>
+          ) : (
+            <ListCardAgenda data={day} />
+          )} */
+}

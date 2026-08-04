@@ -11,10 +11,10 @@ const DialogModal = ({ visible, onCloseModal, onConfime, title, messagem }) => {
         <p>{messagem}</p>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" onClick={onCloseModal}>
+        <CButton color="danger"  className='text-white' onClick={onCloseModal}>
           Cancelar
         </CButton>
-        <CButton color="primary" onClick={onConfime}>
+        <CButton color="success" className='text-white' onClick={onConfime}>
           Confirmar
         </CButton>
       </CModalFooter>

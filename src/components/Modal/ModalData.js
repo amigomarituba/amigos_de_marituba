@@ -37,9 +37,9 @@ export function useModal() {
   return [visible, open, close]
 }
 
-export function ModalData({ visible, close, data }) {
+export function ModalData({ visible, close, data, fields }) {
   return (
-    <CModal visible={visible} onClose={close}>
+    <CModal visible={visible} onClose={close} className='text-uppercase '>
       <CModalHeader></CModalHeader>
       <CModalBody>
         <CRow>
@@ -55,34 +55,57 @@ export function ModalData({ visible, close, data }) {
         </CRow>
         <CRow>
           <CCol>
-            <CardDados
-              title={'Dados Pessoais'}
-              icon={<AccountBoxIcon />}
-              dados={[
-                { title: 'Data de Nascimento', value: formatDate(data?.birth) },
-                { title: 'CPF', value: data.cpf },
-                { title: 'Codigo do Lider', value: data?.uid },
-              ]}
-            />
+            {data.leader ? (
+              <CardDados
+                title={'Dados Pessoais'}
+                icon={<AccountBoxIcon />}
+                dados={[
+                  { title: 'Data de Nascimento', value: formatDate(data?.birth) },
+                  { title: 'CPF', value: fomartCPF(data?.cpf) },
+                  { title: 'Titulo', value: data.titulo },
+
+                ]}
+              />
+            ) : (
+              <CardDados
+                title={'Dados Pessoais'}
+                icon={<AccountBoxIcon />}
+                dados={[
+                  { title: 'Data de Nascimento', value: formatDate(data?.birth) },
+                  { title: 'CPF', value: fomartCPF(`${data?.cpf}`) },
+                  { title: 'Codigo do Lider', value: data?.uid },
+                ]}
+              />
+            )}
+
+            {data.leader && (
+              <CardDados
+                title={'Lider Responsável'}
+                icon={<AccountBoxIcon />}
+                dados={[
+                  { title: 'Nome', value: data?.leader.name },
+                  { title: 'Codigo do Lider', value: data?.leader.uid },
+                ]}
+              />
+            )}
 
             <CardDados
               title={'Contato'}
               icon={<EmailIcon />}
               dados={[
-                { title: 'E-mail', value: data?.email },
                 {
-                  title: data?.leaders_contact?.mode == 'lw' ? 'WhatsApp' : 'Telefone',
+                  title: data[fields.contact]?.mode == 'lw' ? 'WhatsApp' : 'Telefone',
                   value: (
                     <CBadge
                       style={{ fontSize: 14 }}
-                      color={data.leaders_contact?.mode == 'lw' ? 'success' : 'primary'}
+                      color={data[fields.contact]?.mode == 'lw' ? 'success' : 'primary'}
                     >
-                      {data.leaders_contact?.mode == 'lw' ? (
+                      {data[fields.contact]?.mode == 'lw' ? (
                         <WhatsAppIcon className="me-1" />
                       ) : (
                         <LocalPhoneIcon className="me-1" />
                       )}
-                      ({data.leaders_contact?.ddd}) {data.leaders_contact?.phone}
+                      ({data[fields.contact]?.ddd}) {data[fields.contact]?.phone}
                     </CBadge>
                   ),
                 },
@@ -95,40 +118,41 @@ export function ModalData({ visible, close, data }) {
               dados={[
                 {
                   title: 'Logradouro',
-                  value: `${data?.leaders_address?.street}, Nº ${data?.leaders_address?.home}, Q ${data?.leaders_address?.quatrain}`,
+                  value: `${data[fields.address]?.street}, Nº ${data[fields.address]?.home}, Q ${data[fields.address]?.quatrain}`,
                 },
                 {
                   title: 'Complemento',
-                  value: data?.leaders_address?.complement,
+                  value: data[fields.address]?.complement,
                 },
 
                 {
                   title: 'Bairro',
-                  value: data?.leaders_address?.district,
+                  value: data[fields.address]?.district,
                 },
                 {
                   title: 'Cidade',
-                  value: data?.leaders_address?.city,
+                  value: data[fields.address]?.city,
                 },
               ]}
             />
           </CCol>
         </CRow>
+
         <CRow className="mt-3" xs={{ cols: 1, gutter: 2 }} md={{ cols: 2, gutter: 2 }}>
           <CCol>
             <CButton
-              color={data.leaders_contact?.mode == 'lw' ? 'success' : 'primary'}
+              color={data[fields.contact]?.mode == 'lw' ? 'success' : 'primary'}
               className="w-100 text-white"
               onClick={() => {
-                data.leaders_contact?.mode == 'lw'
+                data[fields.contact]?.mode == 'lw'
                   ? window.open(
-                      `https://wa.me/55${data.leaders_contact?.ddd}${data.leaders_contact?.phone}`,
+                      `https://wa.me/55${data[fields.contact]?.ddd}${data[fields.contact]?.phone}`,
                       '_blank',
                     )
-                  : (window.location.href = `tel:+55${data.leaders_contact?.ddd}${data.leaders_contact?.phone}`)
+                  : (window.location.href = `tel:+55${data[fields.contact]?.ddd}${data[fields.contact]?.phone}`)
               }}
             >
-              {data.leaders_contact?.mode == 'lw' ? (
+              {data[fields.contact]?.mode == 'lw' ? (
                 <WhatsAppIcon className="me-1" />
               ) : (
                 <LocalPhoneIcon className="me-1" />

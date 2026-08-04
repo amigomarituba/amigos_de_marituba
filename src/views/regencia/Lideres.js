@@ -302,6 +302,7 @@ const Lideres = () => {
           </CCard>
         </CCol>
       </CRow>
+
       <CRow className="mt-3">
         <CCol>
           <CCard>
@@ -418,6 +419,7 @@ const Lideres = () => {
                                 <EditIcon className="me-2" />
                                 Editar
                               </CDropdownItem>
+
                               <CDropdownItem
                                 className="d-flex flex-row align-item-center gap-2"
                                 onClick={() =>
@@ -448,7 +450,15 @@ const Lideres = () => {
         onConfime={onConfirme}
       />
 
-      <ModalData visible={visible} close={close} data={dataModal} />
+      <ModalData
+        visible={visible}
+        close={close}
+        data={dataModal}
+        fields={{
+          address: 'leaders_address',
+          contact: 'leaders_contact',
+        }}
+      />
 
       <ModalDash
         title={`Registra/Atualizar Líder`}

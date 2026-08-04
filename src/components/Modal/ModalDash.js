@@ -53,23 +53,6 @@ const ModalDash = forwardRef(
             </CButton>
           </CModalFooter>
         </CModal>
-
-        {lider && (
-          <Fab
-            sx={{
-              position: 'fixed',
-              bottom: 30,
-              right: 30,
-              bgcolor: '#fd2',
-              '&:hover': { bgcolor: '#f12' },
-            }}
-            aria-label={'Add'}
-            color="#25f"
-            onClick={handleModalVisible}
-          >
-            <AddIcon color="#f2f" />
-          </Fab>
-        )}
       </>
     )
   },

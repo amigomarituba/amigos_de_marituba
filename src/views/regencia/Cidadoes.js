@@ -8,14 +8,23 @@ import {
   CBadge,
   CButton,
   CButtonGroup,
+  CCard,
+  CCardBody,
+  CCardHeader,
   CCol,
   CCollapse,
   CContainer,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
   CForm,
   CFormCheck,
   CFormInput,
   CFormLabel,
   CFormSelect,
+  CHeader,
+  CInputGroup,
   CModal,
   CModalBody,
   CModalHeader,
@@ -30,18 +39,35 @@ import {
   CTableRow,
 } from '@coreui/react'
 import { Box } from '@mui/material'
-import { cilUser } from '@coreui/icons'
+import { cilOptions, cilUser } from '@coreui/icons'
 import { useForm } from 'react-hook-form'
 import { instanceAxios } from '../../config/api'
 import AlertRegistre from '../../components/AlertRegistre/AlertRegistre'
 import DialogModal from '../../components/DialogModal/DialogModal'
 import { formatDate } from '../../utils/Utils'
 import { useDispatch, useSelector } from 'react-redux'
+import CardBody from 'rsuite/esm/Card/CardBody'
+import AddIcon from '@mui/icons-material/Add'
+import SearchIcon from '@mui/icons-material/Search'
+import PersonIcon from '@mui/icons-material/Person'
+import { fomartCPF } from './Cards/Utils/FormatInput'
+import CIcon from '@coreui/icons-react'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import WhatsAppIcon from '@mui/icons-material/WhatsApp'
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
+import HistoryIcon from '@mui/icons-material/History'
+import { useModal, ModalData } from '../../components/Modal/ModalData'
 
 const Cidadoes = () => {
-  const user = useSelector((state) => state.user)
+  const [visible, open, close] = useModal()
+  const [dataModal, setDataModal] = useState({})
 
+  const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
+
+  const [input, setInput] = useState(null)
 
   const {
     register,
@@ -86,11 +112,11 @@ const Cidadoes = () => {
 
   const [leaders, setLeaders] = useState([])
 
-  const fillterCallback = async (filter) => {
+  const fillterCallback = async () => {
     setSpinnerState(true)
-    if (filter.input != '') {
+    if (input.trim() != '') {
       const { data } = await instanceAxios.get('/citizen/show', {
-        params: filter,
+        params: { input: input.trim() },
       })
 
       if (data.length != 0) {
@@ -284,216 +310,212 @@ const Cidadoes = () => {
   }, [])
 
   return (
-    <>
-      <DialogModal
-        visible={dialogModalVisible}
-        messagem={`Você deseja apagar o cidadao ${infoLider} ?`}
-        title={'Deleta Cidadao?'}
-        onCloseModal={onCloseModal}
-        onConfime={onConfirme}
-      />
+    <CContainer fluid>
+      <CRow>
+        <CCol>
+          <CCard className="w-100 p-3">
+            <CardBody>
+              <CRow>
+                <CCol>
+                  <div>
+                    <h4>Cidadão</h4>
+                    <span>Gerenciamento de Cidadãos no Sistema</span>
+                  </div>
+                </CCol>
 
-      <AlertRegistre
-        open={alertAgendamentosFuturos}
-        handleClose={handleClose}
-        severity={'warning'}
-        message={'Não é possivel deleta, cidadão ainda possue agendamentos futuros!'}
-      />
+                <CCol className="d-flex align-items-center justify-content-end ">
+                  <CButton
+                    color="primary"
+                    className="d-flex"
+                    onClick={() => {
+                      modalVisible.current.visibleModal()
+                    }}
+                  >
+                    <AddIcon />
+                    <span className="d-md-block d-none">Criar Novo Cidadão</span>
+                  </CButton>
+                </CCol>
+              </CRow>
+            </CardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+      <CRow className="mt-3">
+        <CCol>
+          <CCard>
+            <CCardHeader>
+              <CRow>
+                <CCol>
+                  <CInputGroup>
+                    <CFormInput
+                      type="text"
+                      onChange={(e) => setInput(e.target.value)}
+                      // label="Cidadão"
+                      placeholder="Buscar por Nome/CPF/titulo"
+                      // value={filterValue.type == 'text' ? filterValue.input : ''}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          fillterCallback()
+                        }
+                      }}
+                    />
 
-      <AlertRegistre
-        open={alertJaCriado}
-        handleClose={handleClose}
-        severity={'warning'}
-        message={'Cidadão já possue um Cadastrado'}
-      />
+                    <CButton color="primary" variant="outline" onClick={fillterCallback}>
+                      <SearchIcon />
+                      Buscar
+                    </CButton>
+                  </CInputGroup>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+          </CCard>
 
-      <AlertRegistre
-        open={alertDeleteOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Excluido com sucesso'}
-      />
+          {!spinnnerState ? (
+            cidadao.map((cid) => (
+              <CRow className="mt-2">
+                <CCol>
+                  <CCard>
+                    <CCardBody>
+                      <CRow className="text-center">
+                        <CCol
+                          xs={'auto'}
+                          md={1}
+                          className="d-flex justify-content-center align-items-center"
+                        >
+                          <PersonIcon style={{ fontSize: 37 }} />
+                        </CCol>
 
-      <AlertRegistre
-        open={alertDeleteError}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro na Exclusão'}
-      />
+                        <CCol>
+                          <div className="d-flex flex-column text-uppercase ">
+                            <span>Nome</span>
+                            <strong>{cid.name}</strong>
 
-      <AlertRegistre
-        open={alertOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Registrado com Sucesso'}
-      />
+                            <small className="d-md-none d-block text-secondary text-uppercase">
+                              CPF: {fomartCPF(cid.cpf)}
+                            </small>
+                          </div>
+                        </CCol>
+                        <CCol className="d-md-block d-none" md={2}>
+                          <div className="d-flex flex-column">
+                            <span>CPF</span>
+                            <strong>{fomartCPF(cid.cpf)}</strong>
+                          </div>
+                        </CCol>
 
-      <AlertRegistre
-        open={alertErro}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro no Salvento do Registro'}
-      />
+                        <CCol className="d-md-block d-none" md={2}>
+                          <div className="d-flex flex-column ">
+                            <span>Titulo</span>
+                            <strong>{cid.titulo == '' ? '---' : cid.titulo}</strong>
+                          </div>
+                        </CCol>
 
-      <CModal
-        size="xl"
-        visible={visibleModalHistory}
-        onClose={() => {
-          setVisibleModalHistory(false)
-          setTitleModal('')
+                        <CCol className="d-md-block d-none" md={2}>
+                          <div className="d-flex flex-column">
+                            <span>Nascimento</span>
+                            <strong>{formatDate(cid.birth)}</strong>
+                          </div>
+                        </CCol>
+
+                        <CCol className="d-md-block d-none" md={2}>
+                          <div className="d-flex flex-column">
+                            <span>Contanto</span>
+
+                            <strong>
+                              <CBadge
+                                color={cid.citizens_contact.mode == 'lw' ? 'success' : 'primary'}
+                                as={cid.citizens_contact.mode == 'lw' ? 'a' : 'span'}
+                                as={'a'}
+                                href={`https://wa.me/55${cid.citizens_contact.ddd}${cid.citizens_contact.phone}`}
+                                target="_blank"
+                              >
+                                <span>
+                                  {cid.citizens_contact.mode == 'lw' ? (
+                                    <WhatsAppIcon className="me-1" />
+                                  ) : (
+                                    <LocalPhoneIcon className="me-1" />
+                                  )}
+                                  ({cid.citizens_contact.ddd}){cid.citizens_contact.phone}
+                                </span>
+                              </CBadge>
+                            </strong>
+                          </div>
+                        </CCol>
+
+                        <CCol
+                          className="d-flex justify-content-center align-items-center"
+                          xs={'auto'}
+                        >
+                          <CDropdown className="d-block">
+                            <CDropdownToggle>
+                              <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
+                            </CDropdownToggle>
+                            <CDropdownMenu>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => {
+                                  open()
+                                  setDataModal(cid)
+                                }}
+                              >
+                                <RemoveRedEyeIcon />
+                                Infomações
+                              </CDropdownItem>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => {
+                                  handleEditer(cid)
+                                }}
+                              >
+                                <EditIcon className="me-2" />
+                                Editar
+                              </CDropdownItem>
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => {
+                                  handleDelete(cid)
+                                }}
+                              >
+                                <DeleteIcon className="me-2" />
+                                Deletar
+                              </CDropdownItem>
+
+                              <CDropdownItem
+                                className="d-flex flex-row align-item-center gap-2"
+                                onClick={() => {
+                                  handleHistorico(cid)
+                                }}
+                              >
+                                <HistoryIcon className="me-2" />
+                                Historico
+                              </CDropdownItem>
+                            </CDropdownMenu>
+                          </CDropdown>
+                        </CCol>
+                      </CRow>
+                    </CCardBody>
+                  </CCard>
+                </CCol>
+              </CRow>
+            ))
+          ) : (
+            <CRow>
+              <CCol className="d-flex align-items-center justify-content-center mt-4">
+                <CSpinner />
+              </CCol>
+            </CRow>
+          )}
+        </CCol>
+      </CRow>
+
+      <ModalData
+        visible={visible}
+        close={close}
+        data={dataModal}
+        fields={{
+          address: 'citizens_address',
+          contact: 'citizens_contact',
         }}
-        aria-labelledby="OptionalSizesExample1"
-      >
-        <CModalHeader>
-          <CModalTitle id="OptionalSizesExample1">
-            Histórico de Serviços de {titleModal}
-          </CModalTitle>
-          <CButton
-            color="primary"
-            style={{
-              width: '10%',
-              marginLeft: 10,
-            }}
-            onClick={() => {
-              setMetricasCollapse(!metricasCollapse)
-            }}
-          >
-            Métricas
-          </CButton>
-        </CModalHeader>
-
-        <CModalBody>
-          <CCollapse visible={metricasCollapse}>
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 5,
-              }}
-            >
-              <Box
-                sx={{
-                  width: '50%',
-                }}
-              >
-                <CModalTitle>Métrica por Serviço</CModalTitle>
-                <CTable>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">Serviços</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Total</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {services.map((service, index) => {
-                      return (
-                        <CTableRow key={index}>
-                          <CTableDataCell>
-                            <CBadge color={'secondary'}>{service.service}</CBadge>
-                          </CTableDataCell>
-                          <CTableDataCell>
-                            {
-                              agendamentos.filter(
-                                (agendamento) => agendamento.service == service.service,
-                              ).length
-                            }
-                          </CTableDataCell>
-                        </CTableRow>
-                      )
-                    })}
-                  </CTableBody>
-                </CTable>
-              </Box>
-
-              <Box
-                sx={{
-                  width: '50%',
-                }}
-              >
-                <CModalTitle>Métrica Geral</CModalTitle>
-
-                <CTable>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">Condição</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Total</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    <CTableRow>
-                      <CTableDataCell>
-                        <CBadge color={'primary'}>Presente</CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {agendamentos.filter((a) => a.presence == 1).length}
-                      </CTableDataCell>
-                    </CTableRow>
-
-                    <CTableRow>
-                      <CTableDataCell>
-                        <CBadge color={'danger'}>Ausente</CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        {agendamentos.filter((a) => a.presence == 0).length}
-                      </CTableDataCell>
-                    </CTableRow>
-
-                    <CTableRow>
-                      <CTableDataCell>
-                        <CBadge color={'success'}>Total</CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>{agendamentos.length}</CTableDataCell>
-                    </CTableRow>
-                  </CTableBody>
-                </CTable>
-              </Box>
-            </Box>
-          </CCollapse>
-
-          <CModalTitle style={{ textAlign: 'center' }}>Serviços Agendados</CModalTitle>
-
-          <CTable
-            hover
-            style={{
-              overflowX: 'auto',
-            }}
-          >
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell scope="col">Data</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Servico</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Comparecimento</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Lider Vinculado</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Criado</CTableHeaderCell>
-                <CTableHeaderCell scope="col">Registrador</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-
-            <CTableBody>
-              {agendamentos.map((agendamento, index) => {
-                return (
-                  <CTableRow key={index}>
-                    <CTableDataCell>{agendamento.date_string}</CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color={'secondary'}>{agendamento.service}</CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell style={{ textAlign: 'center' }}>
-                      {agendamento.presence ? (
-                        <CBadge color={'primary'}>Presente</CBadge>
-                      ) : (
-                        <CBadge color={'danger'}>Ausente</CBadge>
-                      )}
-                    </CTableDataCell>
-
-                    <CTableDataCell>{agendamento.leader}</CTableDataCell>
-                    <CTableDataCell>{formatDate(agendamento.createdAt)}</CTableDataCell>
-                    <CTableDataCell>{agendamento.registry_name}</CTableDataCell>
-                  </CTableRow>
-                )
-              })}
-            </CTableBody>
-          </CTable>
-        </CModalBody>
-      </CModal>
+      />
 
       <ModalDash
         title="Registra/Atualizar Cidadão"
@@ -502,7 +524,7 @@ const Cidadoes = () => {
         handleButtonSalveModal={handleButtonSalveModal}
         ref={modalVisible}
         isSpinner={isSubmitting}
-        lider={true}
+        lider={false}
       >
         <ListView>
           <CContainer className="p-0">
@@ -697,36 +719,145 @@ const Cidadoes = () => {
         </ListView>
       </ModalDash>
 
-      <HeaderSeach
-        placeholder={'Nome / CPF / RG / Código de Lider'}
-        fillterCallback={fillterCallback}
-        OnChangeArea={OnChangeArea}
-        nameFiltro={''}
-        select={[]}
+      <DialogModal
+        visible={dialogModalVisible}
+        messagem={`Você deseja apagar o cidadao ${infoLider} ?`}
+        title={'Deleta Cidadao?'}
+        onCloseModal={onCloseModal}
+        onConfime={onConfirme}
       />
 
-      <ListView>
-        {spinnnerState ? (
-          <div className="d-flex justify-content-center mt-5">
-            <CSpinner />
-          </div>
-        ) : cidadao.length != 0 ? (
-          cidadao.map((data) => {
-            return (
-              <CardCidadao
-                key={data.id}
-                data={data}
-                editerCidadao={handleEditer}
-                deleteCidadao={handleDelete}
-                historico={handleHistorico}
-              />
-            )
-          })
-        ) : (
-          <h3 style={{ textAlign: 'center' }}>Nenhum Cidadão Encontrado</h3>
-        )}
-      </ListView>
-    </>
+      <CModal
+        size="xl"
+        visible={visibleModalHistory}
+        onClose={() => {
+          setVisibleModalHistory(false)
+          setTitleModal('')
+        }}
+        aria-labelledby="OptionalSizesExample1"
+      >
+        <CModalHeader>
+          <CModalTitle id="OptionalSizesExample1">Histórico do Cidadão</CModalTitle>
+        </CModalHeader>
+
+        <CModalBody>
+          <CModalTitle style={{ textAlign: 'center' }}>Serviços Agendados</CModalTitle>
+          <CTable responsive>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell scope="col">Data</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Servico</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Comparecimento</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Lider Vinculado</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Criado</CTableHeaderCell>
+                <CTableHeaderCell scope="col">Registrador</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+
+            <CTableBody>
+              {agendamentos.map((agendamento, index) => {
+                return (
+                  <CTableRow key={index}>
+                    <CTableDataCell>{agendamento.date_string}</CTableDataCell>
+                    <CTableDataCell>
+                      <CBadge color={'secondary'}>{agendamento.service}</CBadge>
+                    </CTableDataCell>
+                    <CTableDataCell style={{ textAlign: 'center' }}>
+                      {agendamento.presence ? (
+                        <CBadge color={'primary'}>Presente</CBadge>
+                      ) : (
+                        <CBadge color={'danger'}>Ausente</CBadge>
+                      )}
+                    </CTableDataCell>
+
+                    <CTableDataCell>{agendamento.leader}</CTableDataCell>
+                    <CTableDataCell>{formatDate(agendamento.createdAt)}</CTableDataCell>
+                    <CTableDataCell>{agendamento.registry_name}</CTableDataCell>
+                  </CTableRow>
+                )
+              })}
+            </CTableBody>
+          </CTable>
+        </CModalBody>
+      </CModal>
+    </CContainer>
+    // <>
+    //
+
+    //   <AlertRegistre
+    //     open={alertAgendamentosFuturos}
+    //     handleClose={handleClose}
+    //     severity={'warning'}
+    //     message={'Não é possivel deleta, cidadão ainda possue agendamentos futuros!'}
+    //   />
+
+    //   <AlertRegistre
+    //     open={alertJaCriado}
+    //     handleClose={handleClose}
+    //     severity={'warning'}
+    //     message={'Cidadão já possue um Cadastrado'}
+    //   />
+
+    //   <AlertRegistre
+    //     open={alertDeleteOpen}
+    //     handleClose={handleClose}
+    //     severity={'success'}
+    //     message={'Excluido com sucesso'}
+    //   />
+
+    //   <AlertRegistre
+    //     open={alertDeleteError}
+    //     handleClose={handleClose}
+    //     severity={'error'}
+    //     message={'Erro na Exclusão'}
+    //   />
+
+    //   <AlertRegistre
+    //     open={alertOpen}
+    //     handleClose={handleClose}
+    //     severity={'success'}
+    //     message={'Registrado com Sucesso'}
+    //   />
+
+    //   <AlertRegistre
+    //     open={alertErro}
+    //     handleClose={handleClose}
+    //     severity={'error'}
+    //     message={'Erro no Salvento do Registro'}
+    //   />
+
+    //
+
+    //   <HeaderSeach
+    //     placeholder={'Nome / CPF / RG / Código de Lider'}
+    //     fillterCallback={fillterCallback}
+    //     OnChangeArea={OnChangeArea}
+    //     nameFiltro={''}
+    //     select={[]}
+    //   />
+
+    //   <ListView>
+    //     {spinnnerState ? (
+    //       <div className="d-flex justify-content-center mt-5">
+    //         <CSpinner />
+    //       </div>
+    //     ) : cidadao.length != 0 ? (
+    //       cidadao.map((data) => {
+    //         return (
+    //           <CardCidadao
+    //             key={data.id}
+    //             data={data}
+    //             editerCidadao={handleEditer}
+    //             deleteCidadao={handleDelete}
+    //             historico={handleHistorico}
+    //           />
+    //         )
+    //       })
+    //     ) : (
+    //       <h3 style={{ textAlign: 'center' }}>Nenhum Cidadão Encontrado</h3>
+    //     )}
+    //   </ListView>
+    // </>
   )
 }
 

@@ -9,6 +9,8 @@ export function handleFomartPhone(phone) {
 }
 
 export function fomartCPF(phone) {
+  console.log(phone);
+  
   const regexCPF = /^([0-9]{3})([0-9]{3})([0-9]{3})([0-9]{2})$/;
 
   var str = phone.replace(/[^0-9]/g, "").slice(0, 11);
