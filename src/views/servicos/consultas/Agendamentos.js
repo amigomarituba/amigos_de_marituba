@@ -214,6 +214,7 @@ const Agendamentos = () => {
       })
 
       const data = await apiDayShow(agendamento.date)
+      modalVisible.current.visibleModal()
       setDay(data)
     } else {
       dispatch({
@@ -225,9 +226,8 @@ const Agendamentos = () => {
           message: 'Erro ao agendar cidadão',
         },
       })
+      modalVisible.current.visibleModal()
     }
-
-    modalVisible.current.visibleModal()
   }
 
   const handleButtonSalveModal = () => {
