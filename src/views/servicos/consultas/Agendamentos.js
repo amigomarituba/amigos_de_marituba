@@ -203,6 +203,8 @@ const Agendamentos = () => {
     const res = await instanceAxios.post('/scheduling/create', agendamento)
 
     if (res.status == 200) {
+      modalVisible.current.visibleModal()
+
       dispatch({
         type: 'set',
         alert: {
@@ -214,7 +216,6 @@ const Agendamentos = () => {
       })
 
       const data = await apiDayShow(agendamento.date)
-      modalVisible.current.visibleModal()
       setDay(data)
     } else {
       dispatch({
