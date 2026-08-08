@@ -1,6 +1,10 @@
-import { CFormInput, CFormLabel, CListGroup, CListGroupItem } from '@coreui/react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import {
+  CFormInput,
+  CListGroup,
+  CListGroupItem,
+} from '@coreui/react'
+
+import { useEffect, useState } from 'react'
 import { instanceAxios } from '../config/api'
 import { formatDate } from '../utils/Utils'
 import { fomartCPF } from '../views/regencia/Cards/Utils/FormatInput'
@@ -12,23 +16,37 @@ function SelectChange({ value, onChange }) {
   const [result, setResult] = useState([])
   const [show, setShow] = useState(false)
 
-  const handleSearch = async (e) => {
-    const value = e.target.value
-
-    setSearch(value)
-
-    if (!value) {
+  useEffect(() => {
+    if (!search) {
       setResult([])
       setShow(false)
       return
     }
 
-    const { data } = await instanceAxios.get('/citizen/show', {
-      params: { input: value },
-    })
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await instanceAxios.get('/citizen/show', {
+          params: {
+            input: search,
+          },
+        })
 
-    setResult(data)
-    setShow(true)
+        setResult(data)
+        setShow(true)
+      } catch (error) {
+        console.error('Erro ao buscar cidadão:', error)
+      }
+    }, 400)
+
+    return () => clearTimeout(timer)
+  }, [search])
+
+  const handleSelect = (item) => {
+    setSearch(item.name)
+    setShow(false)
+
+    // Valor que será salvo pelo React Hook Form
+    onChange(item.id)
   }
 
   return (
@@ -36,50 +54,62 @@ function SelectChange({ value, onChange }) {
       <CFormInput
         placeholder="Buscar..."
         floatingLabel="Buscar Cidadão"
-        onChange={handleSearch}
-        onFocus={() => search && setShow(true)}
-        onBlur={() =>
+        onChange={(e) => setSearch(e.target.value)}
+        onFocus={() => {
+          if (search) {
+            setShow(true)
+          }
+        }}
+        onBlur={() => {
           setTimeout(() => {
             setShow(false)
           }, 200)
-        }
+        }}
         className="text-uppercase"
         value={search}
       />
 
-      {show &&
-        (result.length == 0 ? (
-          <CListGroup>
-            <CListGroupItem>Nenhum Resultado Encontrado</CListGroupItem>
-          </CListGroup>
-        ) : (
-          <CListGroup>
-            {result.map((item) => (
+      {show && (
+        <CListGroup>
+          {result.length === 0 ? (
+            <CListGroupItem>
+              Nenhum Resultado Encontrado
+            </CListGroupItem>
+          ) : (
+            result.map((item) => (
               <CListGroupItem
                 key={item.id}
                 as="a"
                 href="#"
-                onClick={() => {
-                  setSearch(item.name)
-                  setShow(false)
-                  onChange(item.id)
-                }}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => handleSelect(item)}
               >
-                <span>
-                  <div className="text-uppercase fw-bold">
-                    <CIcon icon={cilUser} size="lg" className="me-1" />
-                    {item.name}
-                  </div>
-                  {/* <div style={{ fontSize: 15 }}>ID: {item.id}</div> */}
+                <div className="text-uppercase fw-bold">
+                  <CIcon
+                    icon={cilUser}
+                    size="lg"
+                    className="me-1"
+                  />
 
-                  <div style={{ fontSize: 15 }}>CPF: {fomartCPF(item.cpf)}</div>
-                  <div style={{ fontSize: 15 }}>D.N: {formatDate(item.birth)}</div>
-                  <div style={{ fontSize: 15 }}>Lider: {item.leader.name}</div>
-                </span>
+                  {item.name}
+                </div>
+
+                <div style={{ fontSize: 15 }}>
+                  CPF: {fomartCPF(item.cpf)}
+                </div>
+
+                <div style={{ fontSize: 15 }}>
+                  D.N: {formatDate(item.birth)}
+                </div>
+
+                <div style={{ fontSize: 15 }}>
+                  Lider: {item.leader.name}
+                </div>
               </CListGroupItem>
-            ))}
-          </CListGroup>
-        ))}
+            ))
+          )}
+        </CListGroup>
+      )}
     </>
   )
 }
