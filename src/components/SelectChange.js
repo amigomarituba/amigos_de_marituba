@@ -43,7 +43,7 @@ function SelectChange({ value, onChange }) {
             setShow(false)
           }, 200)
         }
-        className='text-uppercase'
+        className="text-uppercase"
         value={search}
       />
 
@@ -70,6 +70,8 @@ function SelectChange({ value, onChange }) {
                     <CIcon icon={cilUser} size="lg" className="me-1" />
                     {item.name}
                   </div>
+                  {/* <div style={{ fontSize: 15 }}>ID: {item.id}</div> */}
+
                   <div style={{ fontSize: 15 }}>CPF: {fomartCPF(item.cpf)}</div>
                   <div style={{ fontSize: 15 }}>D.N: {formatDate(item.birth)}</div>
                   <div style={{ fontSize: 15 }}>Lider: {item.leader.name}</div>

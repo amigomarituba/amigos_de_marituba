@@ -1,24 +1,33 @@
 import {
+  CAccordion,
+  CAccordionBody,
+  CAccordionHeader,
+  CAccordionItem,
   CButton,
   CCard,
   CCardBody,
   CCardFooter,
   CCardHeader,
   CCol,
+  CCollapse,
   CContainer,
+  CFooter,
+  CForm,
   CFormInput,
   CFormLabel,
   CFormSelect,
   CFormTextarea,
+  CInputGroup,
+  CInputGroupText,
   CRow,
   CSpinner,
 } from '@coreui/react'
-import { Box, CardHeader } from '@mui/material'
+import { Box, Card, CardHeader, Collapse } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { Calendar, Col } from 'rsuite'
 import 'rsuite/Calendar/styles/index.css'
 import ModalDash from '../../../components/Modal/ModalDash'
-import { cilCalendar } from '@coreui/icons'
+import { cilCalendar, cilPin, cilSearch } from '@coreui/icons'
 import CardAgendamento from './Cards/CardAgendamento'
 import ListView from '../../../components/ListView/ListView'
 import { useForm, Controller } from 'react-hook-form'
@@ -33,6 +42,16 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import AddIcon from '@mui/icons-material/Add'
 import CardBody from 'rsuite/esm/Card/CardBody'
 import CardFooter from 'rsuite/esm/Card/CardFooter'
+import CardInfo from './Cards/CardInfo'
+import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown'
+import ArticleIcon from '@mui/icons-material/Article'
+import CancelIcon from '@mui/icons-material/Cancel'
+import CIcon from '@coreui/icons-react'
+import { dataExtenso } from '../../regencia/Cards/Utils/DataExplit'
+import { useDispatch } from 'react-redux'
+
+import AccountBoxIcon from '@mui/icons-material/AccountBox'
+import BarChartIcon from '@mui/icons-material/BarChart'
 
 const Agendamentos = () => {
   const {
@@ -42,6 +61,8 @@ const Agendamentos = () => {
     control,
     formState: { isSubmitting },
   } = useForm() //fomulario
+
+  const dispatch = useDispatch()
 
   const [create, setCreate] = useState(false)
   const [dayNow, setDayNow] = useState('')
@@ -61,7 +82,7 @@ const Agendamentos = () => {
   const [servicos, setServicos] = useState([])
 
   const [dialogModalVisible, setDialogModalVisible] = useState(false)
-  const [deleteID, setDeleteID] = useState('')
+  const [deleteID, setDeleteID] = useState({})
   const [info, setInfo] = useState({})
 
   const [alertOpen, setAlertOpen] = useState(false) //alerte de sucesso
@@ -75,6 +96,9 @@ const Agendamentos = () => {
 
   const [filterServices, setFilterServices] = useState([])
 
+  const [valueBuscarAgendado, setBuscarAgendado] = useState('')
+  const [visibleCollapse, setVisibleCollapse] = useState(false)
+
   const handleClose = () => {
     setAlertOpen(false)
     setAlertErro(false)
@@ -85,26 +109,47 @@ const Agendamentos = () => {
   }
 
   const onConfirme = async () => {
-    const { status } = await instanceAxios.delete(`/scheduling/${deleteID}`)
+    const { status } = await instanceAxios.delete(`/scheduling/${deleteID.id}`)
 
     if (status == 200) {
-      setAlertDeleteOpen(true)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'success',
+          message: 'Agendamento deletado com sucesso!!',
+        },
+      })
+
+      console.log(deleteID)
+
+      const data = await apiDayShow(formatDateN(deleteID.date_string))
+
+      console.log(data)
+
+      setDialogModalVisible(false)
+      setDeleteID({})
+      setBuscarAgendado('')
+      setDay(data)
     } else {
-      setAlertDeleteError(true)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'error',
+          message: 'Erro ao deletar serviço',
+        },
+      })
+      setDeleteID('')
+      setDialogModalVisible(false)
     }
-
-    setTimeout(() => {
-      setAlertDeleteError(false)
-      setAlertDeleteOpen(false)
-    }, 3000)
-
-    setDialogModalVisible(false)
-    setDeleteID('')
-    setCreate(!create)
   }
 
   const apiDayShow = async (date) => {
     setSpinnerState(true)
+
     try {
       const { data } = await instanceAxios.get('/scheduling/show', {
         params: { date: date },
@@ -155,32 +200,45 @@ const Agendamentos = () => {
     agendamento.presence = false
     agendamento.regulation = false
 
-    const { status } = await instanceAxios.post('/scheduling/create', agendamento)
+    const res = await instanceAxios.post('/scheduling/create', agendamento)
 
-    if (status == 200) {
-      setAlertOpen(true)
+    if (res.status == 200) {
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'success',
+          message: 'Agendado com Sucesso',
+        },
+      })
+
+      const data = await apiDayShow(agendamento.date)
+      setDay(data)
     } else {
-      setAlertErro(true)
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'error',
+          message: 'Erro ao agendar cidadão',
+        },
+      })
     }
 
-    setTimeout(() => {
-      setAlertOpen(false)
-      setAlertOpen(false)
-    }, 3000)
-
-    setCreate(!create)
     modalVisible.current.visibleModal()
-
-    // setAlertNotSheduller(true)
-
-    // setTimeout(() => {
-    //   setAlertNotSheduller(false)
-    // }, 3000)
   }
 
   const handleButtonSalveModal = () => {
     document.getElementById('submitbtn').click()
   }
+
+  const filterAgendados = day.filter((day) => {
+    const texto = valueBuscarAgendado.toLowerCase()
+
+    return day.name.toLowerCase().includes(texto) || day.cpf.toLowerCase().includes(texto)
+  })
 
   const sendCidadoes = async () => {
     const { data } = await instanceAxios.get('/citizen/show', {
@@ -198,17 +256,18 @@ const Agendamentos = () => {
 
     const d = marcadoDia.map((day) => {
       let show = day.date_string == formatDate(date) ? true : false
+
       if (show) {
         return (
           <div
             color="primary"
             style={{
+              marginTop: 27,
               borderRadius: 50,
-              width: 30,
-              height: 30,
+              width: 24,
+              height: 5,
               backgroundColor: 'rgba(128, 155, 255, 0.41)',
               position: 'absolute',
-              zIndex: -1,
             }}
           ></div>
         )
@@ -219,18 +278,42 @@ const Agendamentos = () => {
   }
 
   const handleRegulacao = async (dataR) => {
-    const { data } = await instanceAxios.post(`/scheduling/update`, dataR)
-    setCreate(!create)
+    const { data, status } = await instanceAxios.post(`/scheduling/update`, dataR)
+    if (status == 200) {
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'info',
+          message: 'Atualizado com sucesso!!!',
+        },
+      })
+      const data = await apiDayShow(formatDateN(dataR.date_string))
+      setDay(data)
+    }
   }
 
   const handleConfimeAgendamento = async (dataC) => {
-    const { data } = await instanceAxios.post(`/scheduling/update`, dataC)
-    setCreate(!create)
+    const { data, status } = await instanceAxios.post(`/scheduling/update`, dataC)
+    if (status == 200) {
+      dispatch({
+        type: 'set',
+        alert: {
+          title: 'Agendamento',
+          visible: true,
+          color: 'info',
+          message: 'Atualizado com sucesso!!!',
+        },
+      })
+      const data = await apiDayShow(formatDateN(dataC.date_string))
+      setDay(data)
+    }
   }
 
   const handleDeleteAgendamento = async (data) => {
     setDialogModalVisible(true)
-    setDeleteID(data.id)
+    setDeleteID(data)
     setInfo(`${data.name} da data ${data.date_string}`)
   }
 
@@ -250,9 +333,10 @@ const Agendamentos = () => {
     } else {
       return (
         <h5
+          className="mt-3"
           style={{ textAlign: 'center', color: 'rgba(244,244,244,.3)', textTransform: 'uppercase' }}
         >
-          Sem Agendamento no dia
+          Sem Agendamento
         </h5>
       )
     }
@@ -268,11 +352,13 @@ const Agendamentos = () => {
     setSpinnerState(true)
 
     try {
-      const leaders = await instanceAxios.get(`/leader`)
-      const services = await instanceAxios.get(`/service`)
       const scheduling = await instanceAxios.get(`/scheduling`)
 
       setMarcadoDia(scheduling.data)
+
+      const leaders = await instanceAxios.get(`/leader`)
+      const services = await instanceAxios.get(`/service`)
+
       setLideres(leaders.data)
       setServicos(services.data)
 
@@ -297,48 +383,13 @@ const Agendamentos = () => {
 
   return (
     <CContainer fluid>
-      {/* <DialogModal
+      <DialogModal
         visible={dialogModalVisible}
         messagem={`Você deseja apagar o agendamento ${info} ?`}
         title={'Deleta Agendamento?'}
         onCloseModal={onCloseModal}
         onConfime={onConfirme}
       />
-
-      <AlertRegistre
-        open={alertOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Registrado com Sucesso!'}
-      />
-
-      <AlertRegistre
-        open={alertErro}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro no Salvento do Registro'}
-      />
-
-      <AlertRegistre
-        open={alertDeleteOpen}
-        handleClose={handleClose}
-        severity={'success'}
-        message={'Excluido com sucesso'}
-      />
-
-      <AlertRegistre
-        open={alertDeleteError}
-        handleClose={handleClose}
-        severity={'error'}
-        message={'Erro na Exclusão'}
-      />
-
-      <AlertRegistre
-        open={alertNotSheduller}
-        handleClose={handleClose}
-        severity={'warning'}
-        message={'Não é Possivel agendar em datas passadas'}
-      /> */}
 
       <CRow>
         <CCol xs={12} md={7}>
@@ -367,74 +418,87 @@ const Agendamentos = () => {
                   </CButton>
                 </CCol>
               </CRow>
+
+              <Calendar
+                isoWeek={false}
+                compact
+                bordered
+                onSelect={handleSelectDay}
+                renderCell={renderCellDay}
+              />
             </CCardBody>
-          </CCard>
+            <CFooter>
+              <CCol className="d-flex align-items-center justify-content-center gap-2">
+                <div
+                  style={{
+                    width: 13,
+                    height: 13,
+                    backgroundColor: '#6C82D3',
+                    borderRadius: 13,
+                  }}
+                ></div>
 
-          <Calendar
-            isoWeek={false}
-            compact
-            bordered
-            onSelect={handleSelectDay}
-            renderCell={renderCellDay}
-          />
+                <strong>c/Agendamentos</strong>
+              </CCol>
+              <CCol className="d-flex align-items-center justify-content-center gap-2">
+                <div
+                  style={{
+                    width: 13,
+                    height: 13,
+                    backgroundColor: '#169DE0',
+                    borderRadius: 13,
+                  }}
+                ></div>
 
-          <CCard>
-            <CCardBody>
-              <CRow>
-                <CCol className="d-flex align-items-center justify-content-center gap-2">
-                  <div
-                    style={{
-                      width: 13,
-                      height: 13,
-                      backgroundColor: '#6C82D3',
-                      borderRadius: 13,
-                    }}
-                  ></div>
+                <strong>Hoje</strong>
+              </CCol>
+              <CCol className="d-flex align-items-center justify-content-center gap-2">
+                <div
+                  style={{
+                    width: 13,
+                    height: 13,
+                    backgroundColor: '#353e5f',
+                    borderRadius: 13,
+                  }}
+                ></div>
 
-                  <strong>c/agendamentos</strong>
-                </CCol>
-                <CCol className="d-flex align-items-center justify-content-center gap-2">
-                  <div
-                    style={{
-                      width: 13,
-                      height: 13,
-                      backgroundColor: '#169DE0',
-                      borderRadius: 13,
-                    }}
-                  ></div>
-
-                  <strong>Hoje</strong>
-                </CCol>
-                <CCol className="d-flex align-items-center justify-content-center gap-2">
-                  <div
-                    style={{
-                      width: 13,
-                      height: 13,
-                      backgroundColor: '#353e5f',
-                      borderRadius: 13,
-                    }}
-                  ></div>
-
-                  <strong>Fora do Mês</strong>
-                </CCol>
-              </CRow>
-            </CCardBody>
+                <strong>Fora do Mês</strong>
+              </CCol>
+            </CFooter>
           </CCard>
         </CCol>
 
         <CCol xs={12} md={5}>
           <CRow>
             <CCol>
-              <CCard>
+              <CCard className="mt-2">
                 <CCardBody>
                   <CRow>
                     <CCol>
-                      <div>
-                        <h4>
-                          <CalendarMonthIcon className="me-2" style={{ fontSize: 30 }} />
-                          Agendamentos dos Dia
-                        </h4>
-                        <span>{formatDate(dayNow)}</span>
+                      <div className="d-md-flex align-items-start justify-content-between d-block">
+                        <div className="d-flex">
+                          <div>
+                            <CalendarMonthIcon className="me-2" style={{ fontSize: 35 }} />
+                          </div>
+
+                          <div>
+                            <h4>Agendamentos do dia</h4>
+                            <h5 style={{ fontSize: 17 }}>{dataExtenso(dayNow)}</h5>
+                          </div>
+                        </div>
+
+                        <div className="mt-2 mt-md-0">
+                          <CButton
+                            color="primary"
+                            onClick={() => setVisibleCollapse(!visibleCollapse)}
+                            onBlur={() => {
+                              setVisibleCollapse(false)
+                            }}
+                          >
+                            <BarChartIcon />
+                            Estatística
+                          </CButton>
+                        </div>
                       </div>
                     </CCol>
                   </CRow>
@@ -443,58 +507,112 @@ const Agendamentos = () => {
             </CCol>
           </CRow>
 
+          <CCollapse visible={visibleCollapse}>
+            <CRow className="mt-2">
+              <CCol>
+                <CCard>
+                  <CCardBody>
+                    <h5>Quantidade de Agendados</h5>
+                    <CRow className="mt-2">
+                      <CCol xs={12} md={4}>
+                        <CardInfo
+                          icon={<CancelIcon style={{ fontSize: 30 }} className="text-danger" />}
+                          day={day.filter((d) => d.presence == 0).length}
+                          title={'Ausentes'}
+                        />
+                      </CCol>
+
+                      <CCol xs={12} md={4}>
+                        <CardInfo
+                          icon={
+                            <ExpandCircleDownIcon
+                              style={{ fontSize: 30 }}
+                              className="text-success"
+                            />
+                          }
+                          day={day.filter((d) => d.presence != 0).length}
+                          title={'Presentes'}
+                        />
+                      </CCol>
+
+                      <CCol md={4}>
+                        <CardInfo
+                          icon={<ArticleIcon style={{ fontSize: 30 }} className="text-info" />}
+                          day={day.filter((d) => d.regulation == 1).length}
+                          title={'Regulação'}
+                        />
+                      </CCol>
+
+                      <CCol md={4}>
+                        <CardInfo
+                          icon={
+                            <AccountBoxIcon style={{ fontSize: 30 }} className="text-primary" />
+                          }
+                          day={day.length}
+                          title={'Total'}
+                        />
+                      </CCol>
+                    </CRow>
+
+                    <h5>Quantidade de Serviços do Dia</h5>
+
+                    <CRow className="mt-2" md={{ cols: 3 }} xs={{ cols: 2 }}>
+                      {Object.entries(filterServices).map(([key, value]) => {
+                        return (
+                          <CCol>
+                            <CardInfo icon={<CIcon icon={cilPin} />} day={value} title={key} />
+                          </CCol>
+                        )
+                      })}
+                    </CRow>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+            </CRow>
+          </CCollapse>
+
           <CRow className="mt-2">
             <CCol>
               <CCard>
-                <CCardBody>
-                  <CRow>
-                    <CCol className="d-flex align-items-center  justify-content-center ">
-                      <CCard>
-                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-3 p-1">
-                          <div>
-                            <CalendarMonthIcon style={{ fontSize: 35 }} />
-                          </div>
-                          <div className="d-flex align-items-center  justify-content-center flex-column ">
-                            <h6>{day.filter((d) => d.presence == 0).length}</h6>
-                            <strong>Ausentes</strong>
-                          </div>
-                        </CardBody>
-                      </CCard>
-                    </CCol>
+                <CardBody>
+                  <div className="p-3">
+                    <CInputGroup>
+                      <CInputGroupText>
+                        <CIcon icon={cilSearch} />
+                      </CInputGroupText>
 
-                    <CCol className="d-flex align-items-center  justify-content-center ">
-                      <CCard>
-                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-3 p-1">
-                          <div>
-                            <CalendarMonthIcon style={{ fontSize: 35 }} />
-                          </div>
-                          <div className="d-flex align-items-center  justify-content-center flex-column ">
-                            <h6>{day.filter((d) => d.presence == 0).length}</h6>
-                            <strong>Ausentes</strong>
-                          </div>
-                        </CardBody>
-                      </CCard>
-                    </CCol>
-
-                    <CCol className="d-flex align-items-center  justify-content-center ">
-                      <CCard className="p-2">
-                        <CardBody className="d-flex align-items-center flex-row  justify-content-center gap-2 p-1">
-                          <div className="d-flex align-items-center  justify-content-center flex-column ">
-                            <h5 className='d-flex align-items-center gap-3'>
-                              <CalendarMonthIcon style={{ fontSize: 25 }} />
-                        
-                              {day.filter((d) => d.presence == 0).length}
-                            </h5>
-                          </div>
-                        </CardBody>
-                        <CardFooter>
-                          <strong>Ausentes</strong>
-                        </CardFooter>
-                      </CCard>
-                    </CCol>
-                  </CRow>
-                </CCardBody>
+                      <CFormInput
+                        value={valueBuscarAgendado}
+                        type="text"
+                        placeholder="Buscar por nome/CPF"
+                        onChange={({ target }) => {
+                          setBuscarAgendado(target.value)
+                        }}
+                      />
+                      <CButton
+                        color="primary"
+                        onClick={() => {
+                          setBuscarAgendado('')
+                        }}
+                      >
+                        Limpar
+                      </CButton>
+                    </CInputGroup>
+                  </div>
+                </CardBody>
               </CCard>
+            </CCol>
+          </CRow>
+
+          <CRow>
+            <CCol>
+              {spinnnerState ? (
+                <div className="d-flex justify-content-center mt-5">
+                  <CSpinner />
+                </div>
+              ) : (
+                <ListCardAgenda data={filterAgendados} />
+              )}
             </CCol>
           </CRow>
         </CCol>
@@ -572,26 +690,3 @@ const Agendamentos = () => {
 }
 
 export default Agendamentos
-{
-  /* <h4 className="text-center">CIDADÃOS</h4>
-          <h6 className="text-center mb-3 text-uppercase">
-            Total: {day.length} | presentes: {day.filter((d) => d.presence == 1).length} | ausentes:{' '}
-            {day.filter((d) => d.presence == 0).length}
-          </h6>
-          <div className="d-flex justify-content-center flex-row gap-3 mt-3 mb-3">
-            {Object.entries(filterServices).map(([key, value]) => {
-              return (
-                <small key={key} className="fw-bold fs-6 text-uppercase">
-                  {key} : {value}
-                </small>
-              )
-            })}
-          </div>
-          {spinnnerState ? (
-            <div className="d-flex justify-content-center mt-5">
-              <CSpinner />
-            </div>
-          ) : (
-            <ListCardAgenda data={day} />
-          )} */
-}

@@ -17,6 +17,7 @@ const DefaultLayout = () => {
                 <CSpinner color="primary" variant="grow" />
               </div>
             }
+          
           >
             <AppContent />
           </Suspense>

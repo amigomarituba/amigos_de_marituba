@@ -84,6 +84,8 @@ const Acess = () => {
   const [lideres, setLideres] = useState([])
   const [acess, setAcess] = useState([])
 
+  const [valueBuscarUser, setBuscarUser] = useState('')
+
   const onsubmit = async (data) => {
     try {
       const res = await instanceAxios.post('/login/create', data)
@@ -142,6 +144,16 @@ const Acess = () => {
     }
   }
 
+  const filterUsers = acess.filter((user) => {
+    const text = valueBuscarUser?.toUpperCase()
+
+    if (text == 'to'.toUpperCase()) {
+      return user
+    }
+
+    return user.leader_name?.toUpperCase().includes(text) || user.level.toUpperCase().includes(text)
+  })
+
   const handleRemoveUser = async (user_obj) => {
     if (!user_obj.delete) {
       setConfirmeModal({ visible: true, ...user_obj })
@@ -178,6 +190,8 @@ const Acess = () => {
 
     setLoad(true)
     const { status, data } = await instanceAxios.get('/login')
+    console.log(data)
+
     if (status == 200) {
       setAcess(data)
       setLoad(false)
@@ -291,7 +305,14 @@ const Acess = () => {
                 <CCol>
                   <CRow>
                     <CCol md={6}>
-                      <CFormInput type="text" label="Lider" placeholder="buscar lider" disabled />
+                      <CFormInput
+                        type="text"
+                        label="Lider"
+                        placeholder="buscar lider"
+                        onChange={({ target }) => {
+                          setBuscarUser(target.value)
+                        }}
+                      />
                     </CCol>
 
                     <CCol md={6}>
@@ -299,12 +320,27 @@ const Acess = () => {
                         style={{ marginBottom: 3 }}
                         aria-label="Floating label select example"
                         label="Nivel de Acesso"
+                        onChange={({ target }) => {
+                          setBuscarUser(target.value)
+                        }}
                       >
                         <option value={'to'}>Todos</option>
-
                         <option value={'adm'}>Administrativo</option>
                         <option value={'usu'}>Usuário</option>
                       </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CRow className="mt-2">
+                    <CCol>
+                      <CButton
+                        variant="outline"
+                        color="primary"
+                        onClick={() => {
+                          setBuscarUser('')
+                        }}
+                      >
+                        Limpar Filtro
+                      </CButton>
                     </CCol>
                   </CRow>
                 </CCol>
@@ -327,7 +363,7 @@ const Acess = () => {
                       </CTableDataCell>
                     </CTableRow>
                   ) : (
-                    acess.map((ac) => (
+                    filterUsers.map((ac) => (
                       <CTableRow>
                         <CTableDataCell>{ac.leader_name.toUpperCase()}</CTableDataCell>
                         <CTableDataCell>{fomartCPF(ac.cpf)}</CTableDataCell>
