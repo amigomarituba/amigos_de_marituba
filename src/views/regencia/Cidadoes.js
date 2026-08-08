@@ -376,7 +376,7 @@ const Cidadoes = () => {
                 <CCol>
                   <CCard>
                     <CCardBody>
-                      <CRow className="text-center">
+                      <CRow className="text-center text-uppercase">
                         <CCol
                           xs={'auto'}
                           md={1}
