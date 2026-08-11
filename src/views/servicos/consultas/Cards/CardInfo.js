@@ -1,9 +1,9 @@
-import { CCard } from "@coreui/react";
-import CardBody from "rsuite/esm/Card/CardBody";
+import { CCard } from '@coreui/react'
+import CardBody from 'rsuite/esm/Card/CardBody'
 
-export default function CardInfo({day,title,icon, ...props}) {
+export default function CardInfo({ day, title, icon, ...props }) {
   return (
-    <CCard className="p-2 mb-2" >
+    <CCard className="p-2 mb-2" {...props}>
       <CardBody>
         <div className="d-flex align-items-center justify-content-center gap-2">
           <div

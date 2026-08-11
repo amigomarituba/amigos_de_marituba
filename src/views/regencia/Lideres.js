@@ -9,6 +9,7 @@ import {
   CButton,
   CButtonGroup,
   CCard,
+  CCardBody,
   CCardHeader,
   CCol,
   CContainer,
@@ -261,7 +262,7 @@ const Lideres = () => {
       <CRow>
         <CCol>
           <CCard className="w-100 p-3">
-            <CardBody>
+            <CCardBody>
               <CRow>
                 <CCol>
                   <div>
@@ -298,7 +299,7 @@ const Lideres = () => {
                   <strong>{lideres.length} registros</strong>
                 </CCol>
               </CRow>
-            </CardBody>
+            </CCardBody>
           </CCard>
         </CCol>
       </CRow>

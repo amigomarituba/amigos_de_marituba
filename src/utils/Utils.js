@@ -1,10 +1,10 @@
-import moment from "moment/moment"
+import moment from 'moment/moment'
 
 const formatDate = (date) => {
-    const data = moment(date).locale('pt-br')
-    const dataF = data.format('DD/MM/YYYY')
-    return dataF
-  }
+  const data = moment(date).locale('pt-br')
+  const dataF = data.format('DD/MM/YYYY')
+  return dataF
+}
 
 const formatDateN = (date) => {
   const data = moment(date).locale('pt-br')
@@ -12,7 +12,5 @@ const formatDateN = (date) => {
   return dataF
 }
 
-const formatNumber = (number) =>{
-  
-}
-export {formatDate,formatDateN}
+const formatNumber = (number) => {}
+export { formatDate, formatDateN }

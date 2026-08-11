@@ -122,16 +122,14 @@ const Agendamentos = () => {
         },
       })
 
-      console.log(deleteID)
-
-      const data = await apiDayShow(formatDateN(deleteID.date_string))
-
-      console.log(data)
+      const data = await apiDayShow(formatDateN(dayNow))
 
       setDialogModalVisible(false)
       setDeleteID({})
       setBuscarAgendado('')
       setDay(data)
+
+      await marcadorAPI()
     } else {
       dispatch({
         type: 'set',
@@ -177,13 +175,12 @@ const Agendamentos = () => {
 
   const handleSelectDay = async (date) => {
     const dateF = formatDateN(date)
+
     const data = await apiDayShow(dateF)
+
+    setDay(data)
+
     setDayNow(dateF)
-    try {
-      setDay(data)
-    } catch {
-      setDay([])
-    }
   }
 
   const onsubmit = async (agendamento) => {
@@ -217,6 +214,7 @@ const Agendamentos = () => {
 
       const data = await apiDayShow(agendamento.date)
       setDay(data)
+      await marcadorAPI()
     } else {
       dispatch({
         type: 'set',
@@ -254,11 +252,8 @@ const Agendamentos = () => {
 
   const renderCellDay = (date) => {
     let dataF = formatDate(date)
-
     const d = marcadoDia.map((day) => {
-      let show = day.date_string == formatDate(date) ? true : false
-
-      if (show) {
+      if (day.date_string == dataF) {
         return (
           <div
             color="primary"
@@ -290,13 +285,16 @@ const Agendamentos = () => {
           message: 'Atualizado com sucesso!!!',
         },
       })
-      const data = await apiDayShow(formatDateN(dataR.date_string))
+
+      const data = await apiDayShow(dayNow)
+
       setDay(data)
     }
   }
 
   const handleConfimeAgendamento = async (dataC) => {
     const { data, status } = await instanceAxios.post(`/scheduling/update`, dataC)
+
     if (status == 200) {
       dispatch({
         type: 'set',
@@ -307,7 +305,8 @@ const Agendamentos = () => {
           message: 'Atualizado com sucesso!!!',
         },
       })
-      const data = await apiDayShow(formatDateN(dataC.date_string))
+      const data = await apiDayShow(dayNow)
+
       setDay(data)
     }
   }
@@ -349,13 +348,17 @@ const Agendamentos = () => {
     setListaCidadoes([])
   }
 
+  const marcadorAPI = async () => {
+    const scheduling = await instanceAxios.get(`/scheduling`)
+
+    setMarcadoDia(scheduling.data)
+  }
+
   const api = async () => {
     setSpinnerState(true)
 
     try {
-      const scheduling = await instanceAxios.get(`/scheduling`)
-
-      setMarcadoDia(scheduling.data)
+      await marcadorAPI()
 
       const leaders = await instanceAxios.get(`/leader`)
       const services = await instanceAxios.get(`/service`)
@@ -557,11 +560,16 @@ const Agendamentos = () => {
 
                     <h5>Quantidade de Serviços do Dia</h5>
 
-                    <CRow className="mt-2" md={{ cols: 3 }} xs={{ cols: 2 }}>
+                    <CRow className="mt-2" md={{ cols: 3 }} xs={{ cols: 2, gutter: 2 }}>
                       {Object.entries(filterServices).map(([key, value]) => {
                         return (
                           <CCol>
-                            <CardInfo icon={<CIcon icon={cilPin} />} day={value} title={key} />
+                            <CardInfo
+                              icon={<CIcon icon={cilPin} size="lg" className="text-info" />}
+                              day={value}
+                              title={key}
+                              className={'border border-info'}
+                            />
                           </CCol>
                         )
                       })}

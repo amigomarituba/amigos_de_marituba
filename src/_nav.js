@@ -39,25 +39,18 @@ const _nav = [
     type: 'public',
     name: 'Gerenciamento',
   },
-  // {
-  //   component: CNavItem,
-  //   type:'private',
-  //   name: 'Areas',
-  //   to: '/areas',
-  //   icon: <CIcon icon={cilTerrain} customClassName="nav-icon" />,
-  // },
   {
     component: CNavItem,
     name: 'LIDERES',
     type: 'private',
-    to: '/lideres/all',
+    to: '/lideres',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'CIDADÃOS',
     type: 'public',
-    to: '/cidadoes/all',
+    to: '/cidadoes',
     icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
@@ -83,6 +76,13 @@ const _nav = [
     component: CNavTitle,
     type: 'public',
     name: 'Configurações',
+  },
+  {
+    component: CNavItem,
+    type: 'private',
+    name: 'ÁREAS',
+    to: '/areas',
+    icon: <CIcon icon={cilTerrain} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

@@ -1,6 +1,7 @@
 import React from 'react'
 import Service from './views/settings/components/Services'
 import Acess from './views/settings/components/Acess'
+import Area from './views/Area/Area'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Lideres = React.lazy(() => import('./views/regencia/Lideres'))
@@ -11,11 +12,12 @@ const Agendamentos = React.lazy(() => import('./views/servicos/consultas/Agendam
 const routes = [
   { path: '/dashboard', name: 'Home', element: Dashboard },
   { path: '/relatorios', name: 'Relatorios', element: Relatorios },
-  { path: '/lideres/:fill', name: 'Lideres', element: Lideres },
-  { path: '/cidadoes/:fill', name: 'Cidadões', element: Cidadoes },
+  { path: '/lideres/', name: 'Lideres', element: Lideres },
+  { path: '/cidadoes/', name: 'Cidadões', element: Cidadoes },
   { path: '/servicos/agendamentos', name: 'Agendamentos', element: Agendamentos },
   { path: '/settings/servicos', name: 'Servicos', element: Service },
   { path: '/settings/usuarios', name: 'Usuarios', element: Acess },
+  { path: '/areas', name: 'Area', element: Area },
 ]
 
 export default routes

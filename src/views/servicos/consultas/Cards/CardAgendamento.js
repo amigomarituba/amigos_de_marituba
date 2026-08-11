@@ -80,7 +80,7 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
   }
 
   const handleMenuConfim = () => {
-    confimeAgendamento({ id: data.id, type: 'pres', value: true, obs: '' ,data: data })
+    confimeAgendamento({ id: data.id, type: 'pres', value: true, obs: '', data: data })
     handleClose()
   }
 
@@ -90,7 +90,7 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
   }
 
   const handleMenuRegulacaoRemover = () => {
-    regulacao({ id: data.id, type: 'regu', value: false, obs: '',data: data  })
+    regulacao({ id: data.id, type: 'regu', value: false, obs: '', data: data })
     handleClose()
   }
 
@@ -243,6 +243,8 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
         </CRow>
 
         <CRow
+          md={{ cols: 3 }}
+          xs={{ cols: 1 }}
           className="g-2 mt-md-0 mt-2"
           style={{
             fontSize: 14,
@@ -335,7 +337,6 @@ const CardAgendamento = ({ data, deleteAgendamento, confimeAgendamento, regulaca
 
       <CModal
         visible={visible}
-        size="md"
         onClose={() => {
           setVisible(false)
         }}
