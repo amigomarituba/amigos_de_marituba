@@ -3,11 +3,9 @@ import { instanceAxios } from './config/api'
 
 function SessionValidat() {
   let user = JSON.parse(localStorage.getItem('@user'))
-
   if (user){
     instanceAxios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`
   }
-
   return user
 }
 

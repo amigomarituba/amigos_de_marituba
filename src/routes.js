@@ -10,14 +10,19 @@ const Relatorios = React.lazy(() => import('./views/servicos/Relatorios/Relatori
 const Agendamentos = React.lazy(() => import('./views/servicos/consultas/Agendamentos'))
 
 const routes = [
-  { path: '/dashboard', name: 'Home', element: Dashboard },
-  { path: '/relatorios', name: 'Relatorios', element: Relatorios },
-  { path: '/lideres/', name: 'Lideres', element: Lideres },
-  { path: '/cidadoes/', name: 'Cidadões', element: Cidadoes },
-  { path: '/servicos/agendamentos', name: 'Agendamentos', element: Agendamentos },
-  { path: '/settings/servicos', name: 'Servicos', element: Service },
-  { path: '/settings/usuarios', name: 'Usuarios', element: Acess },
-  { path: '/areas', name: 'Area', element: Area },
+  { path: '/dashboard', acess: ['adm'], name: 'Home', element: Dashboard },
+  { path: '/relatorios', acess: ['adm'], name: 'Relatorios', element: Relatorios },
+  { path: '/lideres/', acess: ['adm'], name: 'Lideres', element: Lideres },
+  { path: '/cidadoes/', acess: ['adm', 'usu'], name: 'Cidadões', element: Cidadoes },
+  {
+    path: '/servicos/agendamentos',
+    acess: ['adm', 'usu'],
+    name: 'Agendamentos',
+    element: Agendamentos,
+  },
+  { path: '/settings/servicos', acess: ['adm'], name: 'Servicos', element: Service },
+  { path: '/settings/usuarios', acess: ['adm'], name: 'Usuarios', element: Acess },
+  { path: '/areas', acess: ['adm'], name: 'Area', element: Area },
 ]
 
 export default routes

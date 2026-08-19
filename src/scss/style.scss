@@ -4,7 +4,7 @@
 // Import styles
 @import "@coreui/coreui/scss/coreui";
 @import "@coreui/chartjs/scss/coreui-chartjs";
-
+@import 'leaflet/dist/leaflet.css';
 // Vendors
 @import "vendors/simplebar";
 
@@ -13,3 +13,8 @@
 
 // If you want to add custom CSS you can put it here
 @import "custom";
+
+.leaflet-container img {
+  max-width: none !important;
+  max-height: none !important;
+}

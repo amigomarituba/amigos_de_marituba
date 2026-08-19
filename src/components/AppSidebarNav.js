@@ -67,12 +67,12 @@ export const AppSidebarNav = ({ items }) => {
     <CSidebarNav as={SimpleBar}>
       {items &&
         items.map((item, index) => {
-          if (item.type == 'public') {
+          if (item?.acess?.includes(level)) {
             return navItem(item, index)
-          } else {
-            if (level == 'adm') {
-              return navItem(item, index)
-            }
+          }
+
+          if (!item.acess) {
+            return navItem(item, index)
           }
         })}
     </CSidebarNav>

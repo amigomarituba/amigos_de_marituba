@@ -39,7 +39,7 @@ const ModalDash = forwardRef(
             <CIcon
               icon={icon}
               customClassName="nav-icon"
-              style={{ width: '7%', marginRight: 10 }}
+              style={{ width: '4%', marginRight: 10 }}
             />
             <CModalTitle>{title}</CModalTitle>
           </CModalHeader>
