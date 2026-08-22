@@ -424,7 +424,7 @@ const Cidadoes = () => {
                               <CBadge
                                 color={cid.citizens_contact.mode == 'lw' ? 'success' : 'primary'}
                                 as={cid.citizens_contact.mode == 'lw' ? 'a' : 'span'}
-                                as={'a'}
+                                
                                 href={`https://wa.me/55${cid.citizens_contact.ddd}${cid.citizens_contact.phone}`}
                                 target="_blank"
                               >

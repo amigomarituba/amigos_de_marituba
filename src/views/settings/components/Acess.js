@@ -86,6 +86,8 @@ const Acess = () => {
 
   const [valueBuscarUser, setBuscarUser] = useState('')
 
+ 
+
   const onsubmit = async (data) => {
     try {
       const res = await instanceAxios.post('/login/create', data)
@@ -190,7 +192,7 @@ const Acess = () => {
 
     setLoad(true)
     const { status, data } = await instanceAxios.get('/login')
-    console.log(data)
+    // console.log(data)
 
     if (status == 200) {
       setAcess(data)
