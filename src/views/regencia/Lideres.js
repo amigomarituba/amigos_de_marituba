@@ -74,7 +74,7 @@ const Lideres = () => {
   } = useForm() //fomulario
 
   const [lideres, setLideres] = useState([]) // dados do lider
-  // const [areas, setAreas] = useState([]) // lista as areas para cricar o lider
+  const [zones, setZones] = useState([]) // lista as areas para cricar o lider
   const [create, setCreate] = useState(false) //atualizar a pagina
 
   const [alertOpen, setAlertOpen] = useState(false) //alerte de sucesso
@@ -122,6 +122,10 @@ const Lideres = () => {
   }
 
   const api = async () => {
+    const zones = await instanceAxios.get('/zone')
+    if (zones.status == 200) {
+      setZones(zones.data)
+    }
     setSpinnerState(true)
     const { data } = await instanceAxios.get(`/leader`)
     setLideres(data)
@@ -147,7 +151,7 @@ const Lideres = () => {
       item.name.toLowerCase().includes(texto) ||
       item.cpf.toLowerCase().includes(texto) ||
       item.uid.toLowerCase().includes(texto) ||
-      item?.tag?.toLowerCase().includes(texto)
+      item?.zones?.name.toLowerCase().includes(texto)
     )
   })
 
@@ -321,14 +325,14 @@ const Lideres = () => {
 
                 <CCol md={3} sx={'auto'}>
                   <CFormSelect
-                    disabled
-                    label="tag"
+                    label="área"
                     onChange={(e) => setFilterValue({ type: 'select', input: e.target.value })}
                     value={filterValue.input}
                   >
                     <option value={''}>Todos</option>
-                    <option value={'04319456246'}>04319456246</option>
-                    <option value={'usu'}>Tag3</option>
+                    {zones.map((zone) => (
+                      <option value={zone.name}>{zone.name}</option>
+                    ))}
                   </CFormSelect>
                 </CCol>
 
@@ -353,7 +357,7 @@ const Lideres = () => {
 
                   <CTableHeaderCell className="d-md-block d-none">Codigo</CTableHeaderCell>
 
-                  <CTableHeaderCell>Tag</CTableHeaderCell>
+                  <CTableHeaderCell>área</CTableHeaderCell>
                   <CTableHeaderCell className="d-md-block d-none">Contato</CTableHeaderCell>
 
                   <CTableHeaderCell className="text-center">Ações</CTableHeaderCell>
@@ -361,8 +365,10 @@ const Lideres = () => {
                 <CTableBody>
                   {spinnnerState ? (
                     <CTableRow>
-                      <CTableDataCell colSpan={5} className="text-center">
-                        <CSpinner />
+                      <CTableDataCell colSpan={6}>
+                        <div className="d-flex justify-content-center">
+                          <CSpinner />
+                        </div>
                       </CTableDataCell>
                     </CTableRow>
                   ) : (
@@ -381,7 +387,9 @@ const Lideres = () => {
                         </CTableDataCell>
                         <CTableDataCell>{fomartCPF(lider.cpf)}</CTableDataCell>
                         <CTableDataCell className="d-md-block d-none">{lider.uid}</CTableDataCell>
-                        <CTableDataCell>TAG</CTableDataCell>
+                        <CTableDataCell>
+                          <CBadge color="info">{lider.zones?.name}</CBadge>
+                        </CTableDataCell>
                         <CTableDataCell className="d-md-block d-none" style={{ fontSize: 19.5 }}>
                           <CBadge
                             color={lider.leaders_contact.mode == 'lw' ? 'success' : 'primary'}
@@ -638,26 +646,21 @@ const Lideres = () => {
                 />
               </Box>
 
-              {/* <Box>
-                <CFormLabel style={{ padding: 3, fontWeight: 'bold' }}>
-                  Área Responsavel
-                </CFormLabel>
+              <Box>
+                <CFormLabel style={{ padding: 3, fontWeight: 'bold' }}>Área Vinculada</CFormLabel>
 
                 <CFormSelect
                   style={{ marginBottom: 3 }}
-                  floatingLabel="Área Responsável"
+                  floatingLabel="Áreas"
                   aria-label="Floating label select example"
-                  {...register('zone_uid',{required:true})}
+                  {...register('zone_id')}
                 >
                   <option value={''}>Escolha a Área</option>
-                  {
-                    areas.map((area) =>
-
-                      <option value={area.uid}> {area.type} {area.zone} </option>
-                    )
-                  }
+                  {zones.map((zone) => (
+                    <option value={zone.id}> {zone.name}</option>
+                  ))}
                 </CFormSelect>
-              </Box> */}
+              </Box>
               <input type="submit" hidden id="submitbtn" />
             </CForm>
           </CContainer>

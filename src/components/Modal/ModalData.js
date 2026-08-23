@@ -23,6 +23,7 @@ import { formatDate } from '../../utils/Utils'
 import { fomartCPF } from '../../views/regencia/Cards/Utils/FormatInput'
 import { WhatsApp } from '@mui/icons-material'
 import HomeIcon from '@mui/icons-material/Home'
+import MapIcon from '@mui/icons-material/Map'
 
 export function useModal() {
   const [visible, setVisible] = useState(false)
@@ -39,7 +40,7 @@ export function useModal() {
 
 export function ModalData({ visible, close, data, fields }) {
   return (
-    <CModal visible={visible} onClose={close} className='text-uppercase '>
+    <CModal visible={visible} onClose={close} className="text-uppercase ">
       <CModalHeader></CModalHeader>
       <CModalBody>
         <CRow>
@@ -63,7 +64,6 @@ export function ModalData({ visible, close, data, fields }) {
                   { title: 'Data de Nascimento', value: formatDate(data?.birth) },
                   { title: 'CPF', value: fomartCPF(data?.cpf) },
                   { title: 'Titulo', value: data.titulo },
-
                 ]}
               />
             ) : (
@@ -84,7 +84,33 @@ export function ModalData({ visible, close, data, fields }) {
                 icon={<AccountBoxIcon />}
                 dados={[
                   { title: 'Nome', value: data?.leader.name },
-                  { title: 'Codigo do Lider', value: data?.leader.uid },
+                  { title: 'Código', value: data?.leader.uid },
+                ]}
+              />
+            )}
+            
+            {data.zones && (
+              <CardDados
+                title={'Área vinculada'}
+                icon={<MapIcon />}
+                dados={[
+                  {
+                    title: 'Nome',
+                    value: (
+                      <CBadge style={{ fontSize: 14 }} color="info">
+                        {data.zones?.name}
+                      </CBadge>
+                    ),
+                  },
+                  {
+                    title: 'Localização',
+                    value: `Bairro ${data.zones?.district} / ${data.zones?.city}`,
+                  },
+
+                  {
+                    title: 'Observação',
+                    value: data.zones?.observation,
+                  },
                 ]}
               />
             )}

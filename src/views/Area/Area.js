@@ -110,7 +110,7 @@ export default function Area() {
   const [local, setLocal] = useState(null)
   const [load, setLoad] = useState(false)
 
-  const [linkLocalizacao, setLinkLocalizacao] = useState(null)
+  const [spinner, setSpinner] = useState(false)
 
   const modalVisible = useRef()
 
@@ -182,8 +182,10 @@ export default function Area() {
   }
 
   const api = async () => {
+    setSpinner(true)
     const zones = await instanceAxios.get('/zone')
     if (zones.status == 200) {
+      setSpinner(false)
       setZones(zones.data)
     }
   }
@@ -320,7 +322,18 @@ export default function Area() {
                       />
                       {zones.map((maker, index) => (
                         <div key={index}>
-                          <Circle center={[maker.latitude, maker.longitude]} radius={300} />
+                          <Circle
+                            center={[maker.latitude, maker.longitude]}
+                            radius={maker.citizens?.length}
+                          />
+
+                          {/* <Circle
+                            pathOptions={{
+                              color: 'red',
+                            }}
+                            center={[maker.latitude, maker.longitude]}
+                            radius={maker.leaders?.length *100}
+                          /> */}
                           <Marker key={index} position={[maker.latitude, maker.longitude]}>
                             <Tooltip>
                               <div className="p-2 text-uppercase">
@@ -332,6 +345,8 @@ export default function Area() {
                                 >
                                   {maker.name}
                                 </h6>
+                                <p>Lideres Viculados: {maker.leaders?.length}</p>
+                                <p>Cidadões Viculados: {maker.citizens?.length}</p>
                                 <p>{maker.observation}</p>
                               </div>
                             </Tooltip>
@@ -432,61 +447,71 @@ export default function Area() {
                       <CTableHeaderCell>Ação</CTableHeaderCell>
                     </CTableHead>
                     <CTableBody className="text-uppercase">
-                      {zones_filtes.map((zone) => (
+                      {spinner ? (
                         <CTableRow>
-                          <CTableDataCell>
-                            <div className="d-flex gap-3 align-items-center">
-                              <GpsFixedIcon
-                                sx={{
-                                  fontSize: 30,
-                                }}
-                              />
-                              <span>{zone.name}</span>
+                          <CTableDataCell colSpan={6}>
+                            <div className="d-flex justify-content-center">
+                              <CSpinner />
                             </div>
                           </CTableDataCell>
-                          <CTableDataCell>{zone.district}</CTableDataCell>
-                          <CTableDataCell>{zone.city}</CTableDataCell>
-                          <CTableDataCell>
-                            <CBadge
-                              color="info"
-                              as={'a'}
-                              href={`https://www.google.com/maps?q=${zone.latitude},${zone.longitude}`}
-                              target="_blank"
-                            >
-                              <RoomIcon />
-                              <span
-                                style={{
-                                  fontSize: 13,
-                                }}
+                        </CTableRow>
+                      ) : (
+                        zones_filtes.map((zone) => (
+                          <CTableRow>
+                            <CTableDataCell>
+                              <div className="d-flex gap-3 align-items-center">
+                                <GpsFixedIcon
+                                  sx={{
+                                    fontSize: 30,
+                                  }}
+                                />
+                                <span>{zone.name}</span>
+                              </div>
+                            </CTableDataCell>
+                            <CTableDataCell>{zone.district}</CTableDataCell>
+                            <CTableDataCell>{zone.city}</CTableDataCell>
+                            <CTableDataCell>
+                              <CBadge
+                                color="info"
+                                as={'a'}
+                                href={`https://www.google.com/maps?q=${zone.latitude},${zone.longitude}`}
+                                target="_blank"
                               >
-                                Área
-                              </span>
-                            </CBadge>
-                          </CTableDataCell>
-                          <CTableDataCell>{zone.observation}</CTableDataCell>
-                          <CTableDataCell>
-                            <CDropdown>
-                              <CDropdownToggle>
-                                <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
-                              </CDropdownToggle>
-                              <CDropdownMenu>
-                                <CDropdownItem
-                                  onClick={() => {
-                                    deleteZone(zone.id)
+                                <RoomIcon />
+                                <span
+                                  style={{
+                                    fontSize: 13,
                                   }}
                                 >
-                                  <DeleteIcon className="me-2" />
-                                  Excluir
-                                </CDropdownItem>
-                                <CDropdownItem>
-                                  <EditIcon className="me-2" />
-                                  Editar
-                                </CDropdownItem>
-                              </CDropdownMenu>
-                            </CDropdown>
-                          </CTableDataCell>
-                        </CTableRow>
-                      ))}
+                                  Área
+                                </span>
+                              </CBadge>
+                            </CTableDataCell>
+                            <CTableDataCell>{zone.observation}</CTableDataCell>
+                            <CTableDataCell>
+                              <CDropdown>
+                                <CDropdownToggle>
+                                  <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
+                                </CDropdownToggle>
+                                <CDropdownMenu>
+                                  <CDropdownItem
+                                    onClick={() => {
+                                      deleteZone(zone.id)
+                                    }}
+                                  >
+                                    <DeleteIcon className="me-2" />
+                                    Excluir
+                                  </CDropdownItem>
+                                  <CDropdownItem>
+                                    <EditIcon className="me-2" />
+                                    Editar
+                                  </CDropdownItem>
+                                </CDropdownMenu>
+                              </CDropdown>
+                            </CTableDataCell>
+                          </CTableRow>
+                        ))
+                      )}
                     </CTableBody>
                   </CTable>
                 </CCol>

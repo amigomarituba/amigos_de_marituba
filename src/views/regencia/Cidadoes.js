@@ -25,15 +25,19 @@ import {
   CFormSelect,
   CHeader,
   CInputGroup,
+  CInputGroupText,
   CModal,
   CModalBody,
   CModalHeader,
   CModalTitle,
+  CPagination,
+  CPaginationItem,
   CRow,
   CSpinner,
   CTable,
   CTableBody,
   CTableDataCell,
+  CTableFoot,
   CTableHead,
   CTableHeaderCell,
   CTableRow,
@@ -67,7 +71,8 @@ const Cidadoes = () => {
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
-  const [input, setInput] = useState(null)
+  const [input, setInput] = useState('')
+  const [zoneInput, setZonesInput] = useState('')
 
   const {
     register,
@@ -90,6 +95,11 @@ const Cidadoes = () => {
   const [services, setServices] = useState([])
   const [cidadao, setCidadao] = useState([])
 
+  const [pages, setPages] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+
+  const limit = 50
+
   const [dialogModalVisible, setDialogModalVisible] = useState(false)
   const [deleteID, setDeleteID] = useState('')
   const [infoLider, setInfoLider] = useState({})
@@ -110,7 +120,27 @@ const Cidadoes = () => {
   //com agendamentos
   const [alertAgendamentosFuturos, setAlertAgendamentosFuturos] = useState(false)
 
+  const [zones, setZones] = useState([]) // lista as areas para cricar o lider
+
   const [leaders, setLeaders] = useState([])
+
+  const [loadInit, setLoadInit] = useState(true)
+
+  const getCitizenPages = async () => {
+    setSpinnerState(true)
+    const res = await instanceAxios.get('/citizen', {
+      params: {
+        pages,
+        limit,
+        input,
+        zone: zoneInput,
+      },
+    })
+
+    setCidadao(res.data.data)
+    setTotalPages(res.data.pagination.totalPages)
+    setSpinnerState(false)
+  }
 
   const fillterCallback = async () => {
     setSpinnerState(true)
@@ -305,9 +335,26 @@ const Cidadoes = () => {
     setLeaders(data)
   }, [])
 
+  const getZones = async () => {
+    const zones = await instanceAxios.get('/zone')
+    if (zones.status == 200) {
+      setZones(zones.data)
+    }
+  }
+
+  const handleSeach = (input) => {
+    setInput(input)
+    setPages(1)
+  }
+
   useEffect(() => {
-    Leaders()
-  }, [])
+    if (loadInit) {
+      Leaders()
+      getZones()
+      setLoadInit(false)
+    }
+    getCitizenPages()
+  }, [pages, input, zoneInput])
 
   return (
     <CContainer fluid>
@@ -340,7 +387,7 @@ const Cidadoes = () => {
           </CCard>
         </CCol>
       </CRow>
-      <CRow className="mt-3">
+      {/* <CRow className="mt-3">
         <CCol>
           <CCard>
             <CCardHeader>
@@ -369,82 +416,111 @@ const Cidadoes = () => {
               </CRow>
             </CCardHeader>
           </CCard>
+        </CCol>
+      </CRow> */}
 
-          {!spinnnerState ? (
-            cidadao.map((cid) => (
-              <CRow className="mt-2">
+      <CRow className="mt-2">
+        <CCol>
+          <CCard>
+            <CCardHeader>
+              <CRow>
                 <CCol>
-                  <CCard>
-                    <CCardBody>
-                      <CRow className="text-center text-uppercase">
-                        <CCol
-                          xs={'auto'}
-                          md={1}
-                          className="d-flex justify-content-center align-items-center"
-                        >
-                          <PersonIcon style={{ fontSize: 37 }} />
-                        </CCol>
-
-                        <CCol>
-                          <div className="d-flex flex-column text-uppercase ">
-                            <span>Nome</span>
-                            <strong>{cid.name}</strong>
-
-                            <small className="d-md-none d-block text-secondary text-uppercase">
-                              CPF: {fomartCPF(cid.cpf)}
-                            </small>
+                  <CInputGroup>
+                    <CInputGroupText>cidadão</CInputGroupText>
+                    <CFormInput
+                      type="text"
+                      input={input}
+                      onChange={(e) => handleSeach(e.target.value)}
+                      placeholder="Buscar por Nome/CPF/titulo"
+                    />
+                  </CInputGroup>
+                </CCol>
+                <CCol md={3}>
+                  <CInputGroup>
+                    <CInputGroupText>Área</CInputGroupText>
+                    <CFormSelect
+                      value={zoneInput}
+                      onChange={(e) => {
+                        setZonesInput(e.target.value)
+                        setPages(1)
+                      }}
+                    >
+                      <option value={''}>Todos</option>
+                      {zones.map((zone) => (
+                        <option value={zone.id}>{zone.name}</option>
+                      ))}
+                    </CFormSelect>
+                  </CInputGroup>
+                </CCol>
+                <CCol>
+                  <CInputGroup>
+                    <CButton
+                      color="primary"
+                      variant="outline"
+                      onClick={() => {
+                        setInput('')
+                        setZonesInput('')
+                      }}
+                    >
+                      limpar filtro
+                    </CButton>
+                  </CInputGroup>
+                </CCol>
+              </CRow>
+              <CRow className="mt-2">
+                <CCol md={2}>
+                  <div className="d-flex">
+                    
+                    <CBadge color="primary" style={{fontSize:17}}>Total: {cidadao.length}</CBadge>
+                  </div>
+                </CCol>
+              </CRow>
+            </CCardHeader>
+            <CCardBody>
+              <CTable className="mb-0">
+                <CTableHead className="text-uppercase">
+                  <CTableHeaderCell>nome</CTableHeaderCell>
+                  <CTableHeaderCell>CPF</CTableHeaderCell>
+                  <CTableHeaderCell>titulo</CTableHeaderCell>
+                  <CTableHeaderCell>nascimento</CTableHeaderCell>
+                  <CTableHeaderCell>área</CTableHeaderCell>
+                  <CTableHeaderCell>contato</CTableHeaderCell>
+                  <CTableHeaderCell>ações</CTableHeaderCell>
+                </CTableHead>
+                <CTableBody>
+                  {!spinnnerState ? (
+                    cidadao.map((cid) => (
+                      <CTableRow>
+                        <CTableDataCell>
+                          <div className="d-flex align-items-center gap-2 text-uppercase">
+                            <PersonIcon style={{ fontSize: 30 }} />
+                            <span>{cid.name}</span>
                           </div>
-                        </CCol>
-                        <CCol className="d-md-block d-none" md={2}>
-                          <div className="d-flex flex-column">
-                            <span>CPF</span>
-                            <strong>{fomartCPF(cid.cpf)}</strong>
-                          </div>
-                        </CCol>
-
-                        <CCol className="d-md-block d-none" md={2}>
-                          <div className="d-flex flex-column ">
-                            <span>Titulo</span>
-                            <strong>{cid.titulo == '' ? '---' : cid.titulo}</strong>
-                          </div>
-                        </CCol>
-
-                        <CCol className="d-md-block d-none" md={2}>
-                          <div className="d-flex flex-column">
-                            <span>Nascimento</span>
-                            <strong>{formatDate(cid.birth)}</strong>
-                          </div>
-                        </CCol>
-
-                        <CCol className="d-md-block d-none" md={2}>
-                          <div className="d-flex flex-column">
-                            <span>Contanto</span>
-
-                            <strong>
-                              <CBadge
-                                color={cid.citizens_contact.mode == 'lw' ? 'success' : 'primary'}
-                                as={cid.citizens_contact.mode == 'lw' ? 'a' : 'span'}
-                                
-                                href={`https://wa.me/55${cid.citizens_contact.ddd}${cid.citizens_contact.phone}`}
-                                target="_blank"
-                              >
-                                <span>
-                                  {cid.citizens_contact.mode == 'lw' ? (
-                                    <WhatsAppIcon className="me-1" />
-                                  ) : (
-                                    <LocalPhoneIcon className="me-1" />
-                                  )}
-                                  ({cid.citizens_contact.ddd}){cid.citizens_contact.phone}
-                                </span>
-                              </CBadge>
-                            </strong>
-                          </div>
-                        </CCol>
-
-                        <CCol
-                          className="d-flex justify-content-center align-items-center"
-                          xs={'auto'}
-                        >
+                        </CTableDataCell>
+                        <CTableDataCell>{fomartCPF(cid.cpf)}</CTableDataCell>
+                        <CTableDataCell>{cid.titulo == '' ? '---' : cid.titulo}</CTableDataCell>
+                        <CTableDataCell>{formatDate(cid.birth)}</CTableDataCell>
+                        <CTableDataCell>
+                          <CBadge color="info">{cid.zones?.name}</CBadge>
+                        </CTableDataCell>
+                        <CTableDataCell>
+                          <CBadge
+                            color={cid.citizens_contact.mode == 'lw' ? 'success' : 'primary'}
+                            as={cid.citizens_contact.mode == 'lw' ? 'a' : 'span'}
+                            href={`https://wa.me/55${cid.citizens_contact.ddd}${cid.citizens_contact.phone}`}
+                            target="_blank"
+                          >
+                            <span>
+                              {cid.citizens_contact.mode == 'lw' ? (
+                                <WhatsAppIcon className="me-1" />
+                              ) : (
+                                <LocalPhoneIcon className="me-1" />
+                              )}
+                              ({cid.citizens_contact.ddd}){cid.citizens_contact.phone}
+                            </span>
+                          </CBadge>
+                        </CTableDataCell>
+                        <CTableDataCell>
                           <CDropdown className="d-block">
                             <CDropdownToggle>
                               <CIcon icon={cilOptions} size="lg" aria-haspopup="true" />
@@ -490,20 +566,41 @@ const Cidadoes = () => {
                               </CDropdownItem>
                             </CDropdownMenu>
                           </CDropdown>
-                        </CCol>
-                      </CRow>
-                    </CCardBody>
-                  </CCard>
-                </CCol>
-              </CRow>
-            ))
-          ) : (
-            <CRow>
-              <CCol className="d-flex align-items-center justify-content-center mt-4">
-                <CSpinner />
-              </CCol>
-            </CRow>
-          )}
+                        </CTableDataCell>
+                      </CTableRow>
+                    ))
+                  ) : (
+                    <CTableRow>
+                      <CTableDataCell colSpan={7}>
+                        <div className="d-flex justify-content-center">
+                          <CSpinner />
+                        </div>
+                      </CTableDataCell>
+                    </CTableRow>
+                  )}
+                </CTableBody>
+                <CTableFoot>
+                  <CTableRow>
+                    <CTableDataCell colSpan={7} className="p-0 border-bottom-0">
+                      <div className="d-flex justify-content-center">
+                        <CPagination className="mt-4 mb-0">
+                          {Array.from({ length: totalPages }, (_, index) => (
+                            <CPaginationItem
+                              key={index}
+                              active={pages === index + 1}
+                              onClick={() => setPages(index + 1)}
+                            >
+                              {index + 1}
+                            </CPaginationItem>
+                          ))}
+                        </CPagination>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableFoot>
+              </CTable>
+            </CCardBody>
+          </CCard>
         </CCol>
       </CRow>
 
@@ -713,6 +810,22 @@ const Cidadoes = () => {
                 </CFormSelect>
               </Box>
 
+              <Box>
+                <CFormLabel style={{ padding: 3, fontWeight: 'bold' }}>Área Vinculada</CFormLabel>
+
+                <CFormSelect
+                  style={{ marginBottom: 3 }}
+                  floatingLabel="Áreas"
+                  aria-label="Floating label select example"
+                  {...register('zone_id')}
+                >
+                  <option value={''}>Escolha a Área</option>
+                  {zones.map((zone) => (
+                    <option value={zone.id}> {zone.name}</option>
+                  ))}
+                </CFormSelect>
+              </Box>
+
               <input type="submit" hidden id="submitbtn" />
             </CForm>
           </CContainer>
@@ -781,83 +894,6 @@ const Cidadoes = () => {
         </CModalBody>
       </CModal>
     </CContainer>
-    // <>
-    //
-
-    //   <AlertRegistre
-    //     open={alertAgendamentosFuturos}
-    //     handleClose={handleClose}
-    //     severity={'warning'}
-    //     message={'Não é possivel deleta, cidadão ainda possue agendamentos futuros!'}
-    //   />
-
-    //   <AlertRegistre
-    //     open={alertJaCriado}
-    //     handleClose={handleClose}
-    //     severity={'warning'}
-    //     message={'Cidadão já possue um Cadastrado'}
-    //   />
-
-    //   <AlertRegistre
-    //     open={alertDeleteOpen}
-    //     handleClose={handleClose}
-    //     severity={'success'}
-    //     message={'Excluido com sucesso'}
-    //   />
-
-    //   <AlertRegistre
-    //     open={alertDeleteError}
-    //     handleClose={handleClose}
-    //     severity={'error'}
-    //     message={'Erro na Exclusão'}
-    //   />
-
-    //   <AlertRegistre
-    //     open={alertOpen}
-    //     handleClose={handleClose}
-    //     severity={'success'}
-    //     message={'Registrado com Sucesso'}
-    //   />
-
-    //   <AlertRegistre
-    //     open={alertErro}
-    //     handleClose={handleClose}
-    //     severity={'error'}
-    //     message={'Erro no Salvento do Registro'}
-    //   />
-
-    //
-
-    //   <HeaderSeach
-    //     placeholder={'Nome / CPF / RG / Código de Lider'}
-    //     fillterCallback={fillterCallback}
-    //     OnChangeArea={OnChangeArea}
-    //     nameFiltro={''}
-    //     select={[]}
-    //   />
-
-    //   <ListView>
-    //     {spinnnerState ? (
-    //       <div className="d-flex justify-content-center mt-5">
-    //         <CSpinner />
-    //       </div>
-    //     ) : cidadao.length != 0 ? (
-    //       cidadao.map((data) => {
-    //         return (
-    //           <CardCidadao
-    //             key={data.id}
-    //             data={data}
-    //             editerCidadao={handleEditer}
-    //             deleteCidadao={handleDelete}
-    //             historico={handleHistorico}
-    //           />
-    //         )
-    //       })
-    //     ) : (
-    //       <h3 style={{ textAlign: 'center' }}>Nenhum Cidadão Encontrado</h3>
-    //     )}
-    //   </ListView>
-    // </>
   )
 }
 
