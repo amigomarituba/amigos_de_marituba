@@ -54,7 +54,34 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'RELATORIO',
+    acess: ['adm'],
+    name: 'ÁREAS',
+    to: '/areas',
+    icon: <CIcon icon={cilTerrain} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavTitle,
+    name: 'Relatorios',
+  },
+  {
+    component: CNavItem,
+    name: 'RELATORIO LIDER',
+    acess: ['adm'],
+    to: '/relatorios',
+    icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
+  },
+
+  {
+    component: CNavItem,
+    name: 'RELATORIO CIDADAO',
+    acess: ['adm'],
+    to: '/relatorios',
+    icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
+  },
+
+  {
+    component: CNavItem,
+    name: 'RELATORIO CONSULTAS',
     acess: ['adm'],
     to: '/relatorios',
     icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
@@ -74,13 +101,7 @@ const _nav = [
     component: CNavTitle,
     name: 'Configurações',
   },
-  {
-    component: CNavItem,
-    acess: ['adm'],
-    name: 'ÁREAS',
-    to: '/areas',
-    icon: <CIcon icon={cilTerrain} customClassName="nav-icon" />,
-  },
+
   {
     component: CNavItem,
     name: 'Logins',
