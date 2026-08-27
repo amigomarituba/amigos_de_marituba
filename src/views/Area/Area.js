@@ -320,11 +320,15 @@ export default function Area() {
                         attribution="&copy; OpenStreetMap contributors"
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       />
+
                       {zones.map((maker, index) => (
                         <div key={index}>
                           <Circle
                             center={[maker.latitude, maker.longitude]}
-                            radius={Number(maker.citizens?.length)}
+                            radius={
+                              Number.isFinite(Number(maker.citizens?.length)) ? Number(maker.citizens?.length) : 0
+                            }
+                            //radius={Number(maker.citizens?.length)}
                           />
 
                           {/* <Circle
