@@ -324,7 +324,7 @@ export default function Area() {
                         <div key={index}>
                           <Circle
                             center={[maker.latitude, maker.longitude]}
-                            radius={maker.citizens?.length || 0}
+                            radius={Number(maker.citizens?.length)}
                           />
 
                           {/* <Circle
